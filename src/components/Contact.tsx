@@ -49,7 +49,7 @@ export default function Contact() {
                     {services.map((service) => (
                         <a
                             key={service.title}
-                            href={`mailto:info@dutchbeatboxbattle.nl?subject=${encodeURIComponent(service.title)}`}
+                            href={`mailto:dutchbeatboxbattle@gmail.com?subject=${encodeURIComponent(service.title)}`}
                             className="block p-8 rounded-2xl bg-gradient-to-br from-white/5 to-transparent border border-white/10 backdrop-blur-sm hover:border-[#FF6B00]/50 hover:-translate-y-1 transition-all duration-300 group cursor-pointer"
                             aria-label={`Mail Dutch Beatbox Battle over ${service.title}`}
                         >
@@ -95,17 +95,17 @@ export default function Contact() {
                             </p>
 
                             <a
-                                href="mailto:info@dutchbeatboxbattle.nl"
+                                href="mailto:dutchbeatboxbattle@gmail.com"
                                 className="inline-flex items-center gap-3 text-xl md:text-2xl font-bold text-[#FF6B00] hover:text-[#FF8533] transition-colors group"
                             >
-                                <span>info@dutchbeatboxbattle.nl</span>
+                                <span>dutchbeatboxbattle@gmail.com</span>
                                 <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
                             </a>
 
                             <div className="mt-8">
                                 <Button
                                     size="lg"
-                                    onClick={() => window.location.href = "mailto:info@dutchbeatboxbattle.nl"}
+                                    onClick={() => window.location.href = "mailto:dutchbeatboxbattle@gmail.com"}
                                 >
                                     <Mail className="mr-2 h-5 w-5" />
                                     Stuur een E-mail
