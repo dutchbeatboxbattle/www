@@ -28,7 +28,7 @@ export const projects: Project[] = [
             "Het loopstation format waarbij beatboxers live complete tracks opbouwen met stemlagen, ritmes, baslijnen en melodieën.",
         image: "/projects/loop-di-loop-placeholder.jpg",
         buttonText: "Editie Afgelopen",
-        buttonLink: "mailto:info@dutchbeatboxbattle.nl?subject=Aanmelden%20Mailinglist",
+        buttonLink: "mailto:dutchbeatboxbattle@gmail.com?subject=Aanmelden%20Mailinglist",
         isFinished: false,
     },
     {
@@ -38,7 +38,7 @@ export const projects: Project[] = [
             "Een intense battle format waarin beatboxers head-to-head gaan. Snelle eliminatie rondes, pure skill en maximale energie.",
         image: "/projects/beat-em-up-placeholder.jpg",
         buttonText: "Editie Afgelopen",
-        buttonLink: "mailto:info@dutchbeatboxbattle.nl?subject=Aanmelden%20Mailinglist",
+        buttonLink: "mailto:dutchbeatboxbattle@gmail.com?subject=Aanmelden%20Mailinglist",
         isFinished: false,
     },
     {
@@ -48,7 +48,7 @@ export const projects: Project[] = [
             "Een dag gewijd aan de Nederlandse beatboxcommunity, met workshops, battles en netwerkmogelijkheden.",
         image: "/projects/community.jpg",
         buttonText: "TBA",
-        buttonLink: "mailto:info@dutchbeatboxbattle.nl?subject=Aanmelden%20Mailinglist",
+        buttonLink: "mailto:dutchbeatboxbattle@gmail.com?subject=Aanmelden%20Mailinglist",
         isFinished: false,
     },
     {
