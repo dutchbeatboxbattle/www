@@ -74,7 +74,7 @@ export default function AboutUs() {
                         <div className="text-sm text-white/60 uppercase tracking-wider">Evenementen</div>
                     </div>
                     <div className="text-center p-6 rounded-xl bg-white/5 border border-white/10">
-                        <div className="text-3xl md:text-4xl font-bold text-[#FF6B00] mb-2">20+</div>
+                        <div className="text-3xl md:text-4xl font-bold text-[#FF6B00] mb-2">16</div>
                         <div className="text-sm text-white/60 uppercase tracking-wider">Kampioenen</div>
                     </div>
                 </div>
