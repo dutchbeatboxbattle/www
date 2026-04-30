@@ -22,13 +22,13 @@ export const projects: Project[] = [
         isFinished: false,
     },
     {
-        id: "gnoopje",
-        title: "Beatbox Gnoompjes gespot in het bos",
+        id: "dbb x whc",
+        title: "Dutch Beatbox Battle x World Hoops Classics",
         description:
-            "Er zijn zestien beatbox gnoopjes gespot bij een grote paddestoel in het bos. Bij Verzetswijk natuurlijk.",
+            "Dutch Beatbox Battle x World Hoops Classic op 2 mei Sporthal Zaanstad Zuid",
         image: "/projects/01.webp",
-        buttonText: "Adopteer een Beatbox Gnoopje",
-        buttonLink: "mailto:adopteereengnoom@gmail.com",
+        buttonText: "webite and info",
+        buttonLink: "https://www.thenorthsplash.nl/world-hoops-classic-zaanstad/dutch-beatbox-battle",
         isFinished: false,
     },
     {
