@@ -22,6 +22,16 @@ export const projects: Project[] = [
         isFinished: false,
     },
     {
+        id: "gnoopje",
+        title: "Beatbox Gnoompjes gespot in het bos",
+        description:
+            "Er zijn zestien beatbox gnoopjes gespot bij een grote paddestoel in het bos. Bij Verzetswijk natuurlijk.",
+        image: "",
+        buttonText: "Adopteer een Beatbox Gnoopje",
+        buttonLink: "mailto:adopteereengnoom@gmail.com",
+        isFinished: false,
+    },
+    {
         id: "loop-di-loop",
         title: "Loop-di-Loop",
         description:
