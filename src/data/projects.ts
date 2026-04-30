@@ -26,7 +26,7 @@ export const projects: Project[] = [
         title: "Dutch Beatbox Battle x World Hoops Classics",
         description:
             "Dutch Beatbox Battle x World Hoops Classic op 2 mei Sporthal Zaanstad Zuid",
-        image: "/projects/01.webp",
+        image: "/projects/fotoclp.avif",
         buttonText: "webite and info",
         buttonLink: "https://www.thenorthsplash.nl/world-hoops-classic-zaanstad/dutch-beatbox-battle",
         isFinished: false,
