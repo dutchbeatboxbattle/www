@@ -26,7 +26,7 @@ export const projects: Project[] = [
         title: "Beatbox Gnoompjes gespot in het bos",
         description:
             "Er zijn zestien beatbox gnoopjes gespot bij een grote paddestoel in het bos. Bij Verzetswijk natuurlijk.",
-        image: "",
+        image: "/projects/01.webp",
         buttonText: "Adopteer een Beatbox Gnoopje",
         buttonLink: "mailto:adopteereengnoom@gmail.com",
         isFinished: false,
