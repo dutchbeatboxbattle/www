@@ -25,7 +25,7 @@ export const projects: Project[] = [
         id: "dbb x whc",
         title: "Beats en Basketball in Zaandam!",
         description:
-            "DBB staat op de World Hoops Classic op 2 mei Sporthal Zaanstad Zuid. waar de basketbal en beatbox culture elkaar ontmoeten",
+            "DBB staat op de World Hoops Classic op 2 mei Sporthal Zaanstad Zuid met een exclusieve experience. En waar de basketbal en beatbox culture elkaar ontmoeten in een dag vol actie!",
         image: "/projects/fotoclp.avif",
         buttonText: "Website and info",
         buttonLink: "https://www.thenorthsplash.nl/world-hoops-classic-zaanstad/dutch-beatbox-battle",
