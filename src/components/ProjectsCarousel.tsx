@@ -36,7 +36,7 @@ function ProjectCard({ project }: ProjectCardProps) {
       {/* Finished overlay */}
       {project.isFinished && (
         <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
-          {/* Placeholder overlay - user can replace with custom image */}
+          {/* Placeholder overlay - kan worden vervangen met custom image */}
           <div className="absolute inset-0 bg-black/50 backdrop-blur-[1px]" />
           <div className="relative z-10 transform rotate-12">
             <div className="bg-[#FF6B00] px-8 py-3 rounded-lg shadow-xl">
@@ -60,23 +60,18 @@ function ProjectCard({ project }: ProjectCardProps) {
         </p>
       </CardContent>
 
-      <CardFooter>
-        {project.buttonText && project.buttonLink && !project.isFinished && (
-          <a
-            href={project.buttonLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex h-9 w-full items-center justify-center rounded-md border border-input bg-transparent px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent hover:text-accent-foreground"
-          >
-            {project.buttonText}
-          </a>
-        )}
-        {project.isFinished && (
-          <Button variant="ghost" size="sm" className="w-full opacity-50 cursor-not-allowed" disabled>
-            Event Afgelopen
-          </Button>
-        )}
-      </CardFooter>
+      <CardFooter className="relative z-30">
+  {project.buttonText && project.buttonLink && (
+    <a
+      href={project.buttonLink}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="inline-flex h-9 w-full items-center justify-center rounded-md border border-input bg-[#FF6B00] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#FF8533]"
+    >
+      {project.buttonText}
+    </a>
+  )}
+</CardFooter>
     </Card>
   );
 }
