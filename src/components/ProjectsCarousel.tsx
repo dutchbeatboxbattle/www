@@ -38,9 +38,9 @@ function ProjectCard({ project }: ProjectCardProps) {
           <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none opacity-80">
             <div className="absolute inset-0 bg-black/50 backdrop-blur-[1px]" />
         
-            <div className="relative z-10 w-[120%] transform rotate-12">
-              <div className="bg-[#FF6B00] h-20 md:h-24 px-6 rounded-lg shadow-xl flex items-center justify-center">
-                <span className="whitespace-nowrap text-[22px] sm:text-3xl md:text-4xl font-bold text-white tracking-[0.15em] leading-none">
+            <div className="relative z-10 w-[105%] transform rotate-12">
+              <div className="bg-[#FF6B00] px-4 py-3 rounded-lg shadow-xl flex items-center justify-center">
+                <span className="whitespace-nowrap text-[clamp(14px,4vw,28px)] font-bold text-white tracking-[0.12em] leading-none">
                   EDITION FINISHED
                 </span>
               </div>
