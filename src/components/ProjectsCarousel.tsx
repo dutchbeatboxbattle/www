@@ -60,13 +60,17 @@ function ProjectCard({ project }: ProjectCardProps) {
         </p>
       </CardContent>
 
-      <CardFooter className="relative z-30">
+    <CardFooter className="relative z-30">
   {project.buttonText && project.buttonLink && (
     <a
       href={project.buttonLink}
       target="_blank"
       rel="noopener noreferrer"
-      className="inline-flex h-9 w-full items-center justify-center rounded-md border border-input bg-[#FF6B00] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#FF8533]"
+      className={`inline-flex h-9 w-full items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+        project.isFinished
+          ? "bg-white text-[#FF6B00] hover:bg-white/90"
+          : "bg-[#FF6B00] text-white hover:bg-[#FF8533]"
+      }`}
     >
       {project.buttonText}
     </a>
