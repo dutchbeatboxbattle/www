@@ -35,7 +35,7 @@ function ProjectCard({ project }: ProjectCardProps) {
 
       {/* Finished overlay */}
       {project.isFinished && (
-        <div className="absolute inset-0 z-20 flex items-center justify-center">
+        <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
           {/* Placeholder overlay - user can replace with custom image */}
           <div className="absolute inset-0 bg-black/50 backdrop-blur-[1px]" />
           <div className="relative z-10 transform rotate-12">
