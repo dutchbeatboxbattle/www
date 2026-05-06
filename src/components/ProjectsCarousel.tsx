@@ -33,20 +33,20 @@ function ProjectCard({ project }: ProjectCardProps) {
           <div className="absolute bottom-0 left-0 right-0 h-1 gradient-orange transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
         </div>
 
-      {/* Finished overlay */}
-      {project.isFinished && (
-        <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
-          {/* Placeholder overlay - kan worden vervangen met custom image */}
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-[1px]" />
-          <div className="relative z-10 transform rotate-12">
-            <div className="bg-[#FF6B00] px-8 py-3 rounded-lg shadow-xl">
-              <span className="text-2xl md:text-3xl font-bold text-white tracking-widest">
-                EDITION FINISHED
-              </span>
+        {/* Finished overlay */}
+        {project.isFinished && (
+          <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none opacity-80">
+            <div className="absolute inset-0 bg-black/50 backdrop-blur-[1px]" />
+        
+            <div className="relative z-10 w-[120%] transform rotate-12">
+              <div className="bg-[#FF6B00] h-20 md:h-24 px-6 rounded-lg shadow-xl flex items-center justify-center">
+                <span className="whitespace-nowrap text-[22px] sm:text-3xl md:text-4xl font-bold text-white tracking-[0.15em] leading-none">
+                  EDITION FINISHED
+                </span>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
       <CardHeader className="pb-2">
         <CardTitle className="text-xl md:text-2xl text-white group-hover:text-[#FF6B00] transition-colors">
