@@ -68,7 +68,7 @@ function ProjectCard({ project }: ProjectCardProps) {
       rel="noopener noreferrer"
       className={`inline-flex h-9 w-full items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors ${
         project.isFinished
-          ? "bg-white text-[#FF6B00] hover:bg-white/90"
+          ? "bg-white text-[#FF6B00] hover:bg-white/90 opacity-80"
           : "bg-[#FF6B00] text-white hover:bg-[#FF8533]"
       }`}
     >
