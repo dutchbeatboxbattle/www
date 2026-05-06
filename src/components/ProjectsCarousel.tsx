@@ -41,7 +41,7 @@ function ProjectCard({ project }: ProjectCardProps) {
           <div className="relative z-10 transform rotate-12">
             <div className="bg-[#FF6B00] px-8 py-3 rounded-lg shadow-xl">
               <span className="text-2xl md:text-3xl font-bold text-white tracking-widest">
-                PROJECT FINISHED
+                EDITION FINISHED
               </span>
             </div>
           </div>
