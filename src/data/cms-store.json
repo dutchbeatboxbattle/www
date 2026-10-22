@@ -99,13 +99,13 @@
       "id": "road-1",
       "order": 1,
       "title": "Concept & Community Kick-off",
-      "dateOrPeriod": "Fase 1",
-      "description": "Het samenbrengen van de kerngroep, het vastleggen van de spelregels en het openen van de inschrijvingen.",
+      "dateOrPeriod": "14 november 2026",
+      "description": "De LOB competitie georganiseerd door BoomSnapClap in Theater Zuidplein in Rotterdam. Winne kwalificiteerd zich voor het aankomende Nederlands- en Wereldkampioenschap.",
       "status": "current",
-      "icon": "flag",
-      "titleEn": "Concept & Community Kick-off",
-      "dateOrPeriodEn": "Phase 1",
-      "descriptionEn": "Bringing the core team together, setting the rules and opening registration."
+      "icon": "trophy",
+      "titleEn": "League Of Beatbox 2026",
+      "dateOrPeriodEn": "14 november 2026",
+      "descriptionEn": "The LOB competition organized by BoomSnapClap in Theater Zuidplein in Rotterdam. Also a Dutch & World Championships qualifier."
     },
     {
       "id": "road-2",
@@ -132,5 +132,5 @@
       "descriptionEn": "The main event with a live broadcast, award ceremony and the crowning of the new DBB champions."
     }
   ],
-  "updatedAt": "2026-10-22T18:25:15.961Z"
+  "updatedAt": "2026-10-22T18:27:38.370Z"
 }
