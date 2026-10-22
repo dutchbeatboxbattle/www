@@ -28,14 +28,14 @@
     },
     {
       "id": "proj-beat-em-up",
-      "title": "DBB Beat 'Em Up",
-      "description": "Een actievolle arcade beat 'em up ervaring ontwikkeld met en voor de DBB-community.",
+      "title": "Beat 'Em Up - Beat Battle",
+      "description": "Een actievolle arcade beat 'em up ervaring ontwikkeld met en voor de DBB-community. Ook een beat battle, georganiseerd in Almere.",
       "image": "/projects/beat-em-up-placeholder.jpg",
       "link": "#projects",
       "category": "Event",
       "status": "finished",
       "createdAt": "2025-01-12T12:00:00.000Z",
-      "titleEn": "DBB Beat 'Em Up",
+      "titleEn": "Beat 'Em Up - Beat Battle",
       "descriptionEn": "An action-packed arcade beat ’em up experience developed with and for the DBB community.",
       "categoryEn": "Event"
     },
@@ -132,5 +132,5 @@
       "descriptionEn": "The main event with a live broadcast, award ceremony and the crowning of the new DBB champions."
     }
   ],
-  "updatedAt": "2026-10-22T18:23:03.466Z"
+  "updatedAt": "2026-10-22T18:23:43.626Z"
 }
