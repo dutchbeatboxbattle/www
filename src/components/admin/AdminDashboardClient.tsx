@@ -1,7 +1,14 @@
-```tsx
 "use client";
 
-
+import { TranslationFields, ImageUpload } from "./ContentFields";
+import {
+  connectGitHub,
+  publishContent,
+  clearUploads,
+  imagePreview,
+  type GitHubConnection,
+} from "@/lib/github-cms";
+import { sitePath } from "@/lib/site-path";
 import React, { useState } from "react";
 import {
   CMSData,
@@ -32,15 +39,16 @@ import {
   Pencil,
 } from "lucide-react";
 
-
 interface AdminDashboardClientProps {
   initialAuthenticated: boolean;
   initialData: CMSData;
 }
 
-
 const AVAILABLE_PROJECT_IMAGES = [
-  { label: "Champions League", value: "/projects/champions-league-placeholder.jpg" },
+  {
+    label: "Champions League",
+    value: "/projects/champions-league-placeholder.jpg",
+  },
   { label: "Beat 'Em Up", value: "/projects/beat-em-up-placeholder.jpg" },
   { label: "Loop-di-Loop", value: "/projects/loop-di-loop-placeholder.jpg" },
   { label: "Community Jams", value: "/projects/jams.jpg" },
@@ -49,30 +57,45 @@ const AVAILABLE_PROJECT_IMAGES = [
   { label: "Project 01", value: "/projects/01.webp" },
 ];
 
-
 export default function AdminDashboardClient({
   initialAuthenticated,
   initialData,
 }: AdminDashboardClientProps) {
   const [isAuthenticated, setIsAuthenticated] = useState(initialAuthenticated);
+  const [connection, setConnection] = useState<GitHubConnection | null>(null);
+  const [repository, setRepository] = useState(
+    process.env.NEXT_PUBLIC_GITHUB_REPOSITORY || "",
+  );
+  const [branch, setBranch] = useState(
+    process.env.NEXT_PUBLIC_GITHUB_BRANCH || "main",
+  );
   const [password, setPassword] = useState("");
   const [authError, setAuthError] = useState<string | null>(null);
   const [authLoading, setAuthLoading] = useState(false);
 
-
   const [data, setData] = useState<CMSData>(initialData);
   const [activeTab, setActiveTab] = useState<"projects" | "editions" | "road">(
-    "projects"
+    "projects",
   );
+  const [isUploading, setIsUploading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [feedback, setFeedback] = useState<{
     type: "success" | "error";
     message: string;
   } | null>(null);
 
+  // --- STATE VOOR BEWERKEN ---
+  const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
+  const [editingEditionId, setEditingEditionId] = useState<string | null>(null);
+  const [editingMilestoneId, setEditingMilestoneId] = useState<string | null>(
+    null,
+  );
 
   // --- STATE VOOR NIEUW PROJECT ---
   const [newProject, setNewProject] = useState({
+    titleEn: "",
+    descriptionEn: "",
+    categoryEn: "",
     title: "",
     description: "",
     image: "/projects/champions-league-placeholder.jpg",
@@ -81,18 +104,22 @@ export default function AdminDashboardClient({
     status: "active" as ProjectStatus,
   });
 
-
   // --- STATE VOOR NIEUWE YOUTUBE VIDEO ---
   const [newVideo, setNewVideo] = useState({
+    titleEn: "",
+    descriptionEn: "",
+    editionEn: "",
     title: "",
     edition: "Editie 2025",
     description: "",
     youtubeUrl: "",
   });
 
-
   // --- STATE VOOR NIEUWE ROAD TO DBB MIJLPAAL ---
   const [newMilestone, setNewMilestone] = useState({
+    titleEn: "",
+    descriptionEn: "",
+    dateOrPeriodEn: "",
     title: "",
     dateOrPeriod: "",
     description: "",
@@ -100,12 +127,6 @@ export default function AdminDashboardClient({
     icon: "flag" as MilestoneIcon,
     insertAtPosition: initialData.roadToDbb.length + 1,
   });
-
-
-  const [editingMilestoneId, setEditingMilestoneId] = useState<string | null>(
-    null
-  );
-
 
   // ============================================================================
   // AUTHENTICATIE HANDLERS
@@ -115,75 +136,63 @@ export default function AdminDashboardClient({
     setAuthLoading(true);
     setAuthError(null);
 
-
     try {
-      const res = await fetch("/api/admin/auth", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password }),
-      });
-
-
-      if (!res.ok) {
-        const err = await res.json();
-        setAuthError(err.error || "Inloggen mislukt.");
-        return;
-      }
-
-
+      const result = await connectGitHub(repository, branch, password);
+      setConnection(result.connection);
+      setData(result.data);
       setIsAuthenticated(true);
       setPassword("");
-    } catch {
-      setAuthError("Netwerkfout bij het verbinden met de server.");
+    } catch (error) {
+      setAuthError(
+        error instanceof Error
+          ? error.message
+          : "Verbinding met GitHub mislukt.",
+      );
     } finally {
       setAuthLoading(false);
     }
   };
 
-
   const handleLogout = async () => {
-    await fetch("/api/admin/auth", { method: "DELETE" });
+    setConnection(null);
+    clearUploads();
     setIsAuthenticated(false);
   };
 
-
   // ============================================================================
-  // OPSLAAN HELPER (PERSISTENTIE VIA /api/cms)
+  // OPSLAAN HELPER (PERSISTENTIE VIA GITHUB)
   // ============================================================================
   const persistChanges = async (
     updatedData: CMSData,
-    successMessage: string
+    successMessage: string,
   ) => {
     setIsSaving(true);
     setFeedback(null);
 
-
     try {
-      const res = await fetch("/api/cms", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedData),
-      });
-
-
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error || "Opslaan mislukt.");
-      }
-
-
-      const savedData = (await res.json()) as CMSData;
+      if (!connection) throw new Error("Log eerst in met GitHub.");
+      const result = await publishContent(connection, updatedData);
+      setConnection(result.connection);
+      const savedData = result.data;
       setData(savedData);
-      setFeedback({ type: "success", message: successMessage });
+      setFeedback({
+        type: "success",
+        message:
+          successMessage +
+          " GitHub bouwt de website opnieuw; de live versie volgt na een geslaagde publicatie.",
+      });
+      return true;
     } catch (err: unknown) {
       const msg =
-        err instanceof Error ? err.message : "Fout bij opslaan van wijzigingen.";
+        err instanceof Error
+          ? err.message
+          : "Fout bij opslaan van wijzigingen.";
       setFeedback({ type: "error", message: msg });
+      return false;
     } finally {
       setIsSaving(false);
     }
   };
-
 
   // ============================================================================
   // MODULE 1: PROJECTEN LOGICA
@@ -192,9 +201,11 @@ export default function AdminDashboardClient({
     e.preventDefault();
     if (!newProject.title.trim()) return;
 
-
     const created: ProjectItem = {
       id: `proj-${Date.now()}`,
+      titleEn: newProject.titleEn.trim(),
+      descriptionEn: newProject.descriptionEn.trim(),
+      categoryEn: newProject.categoryEn.trim(),
       title: newProject.title.trim(),
       description: newProject.description.trim(),
       image: newProject.image.trim() || "/projects/01.webp",
@@ -204,43 +215,65 @@ export default function AdminDashboardClient({
       createdAt: new Date().toISOString(),
     };
 
-
     const updated: CMSData = {
       ...data,
       projects: [created, ...data.projects],
     };
 
-
-    await persistChanges(updated, `Project "${created.title}" is toegevoegd!`);
-    setNewProject({
-      title: "",
-      description: "",
-      image: "/projects/champions-league-placeholder.jpg",
-      link: "",
-      category: "Event",
-      status: "active",
-    });
+    try {
+      if (!(await persistChanges(updated, "Project succesvol toegevoegd!")))
+        return;
+      setNewProject({
+        titleEn: "",
+        descriptionEn: "",
+        categoryEn: "",
+        title: "",
+        description: "",
+        image: "/projects/champions-league-placeholder.jpg",
+        link: "",
+        category: "Event",
+        status: "active",
+      });
+    } catch (err) {
+      console.error("Fout bij opslaan project:", err);
+    }
   };
-
 
   const handleUpdateProjectStatus = async (
     projectId: string,
-    newStatus: ProjectStatus
+    newStatus: ProjectStatus,
   ) => {
     const updatedProjects = data.projects.map((p) =>
-      p.id === projectId ? { ...p, status: newStatus } : p
+      p.id === projectId ? { ...p, status: newStatus } : p,
     );
     await persistChanges(
       { ...data, projects: updatedProjects },
-      "Projectstatus is bijgewerkt!"
+      "Projectstatus is bijgewerkt!",
     );
   };
 
+  const handleUpdateProjectField = (
+    id: string,
+    field: keyof ProjectItem,
+    value: string,
+  ) => {
+    setData((prev) => ({
+      ...prev,
+      projects: prev.projects.map((p) =>
+        p.id === id ? { ...p, [field]: value } : p,
+      ),
+    }));
+  };
+
+  const handleSaveProjectEdits = async () => {
+    if (await persistChanges(data, "Project wijzigingen opgeslagen!"))
+      setEditingProjectId(null);
+  };
 
   const handleDeleteProject = async (projectId: string, title: string) => {
     if (
       !window.confirm(
-        `Weet je zeker dat je het project "${title}" definitief wilt verwijderen?`
+        `Weet je zeker dat je het project "${title}" definitief wilt verwijderen?`,
       )
     ) {
       return;
@@ -248,21 +281,18 @@ export default function AdminDashboardClient({
     const updatedProjects = data.projects.filter((p) => p.id !== projectId);
     await persistChanges(
       { ...data, projects: updatedProjects },
-      `Project "${title}" is verwijderd.`
+      `Project "${title}" is verwijderd.`,
     );
   };
-
 
   // ============================================================================
   // MODULE 2: PREVIOUS EDITIONS (YOUTUBE) LOGICA
   // ============================================================================
   const parsedPreview = parseYouTubeUrl(newVideo.youtubeUrl);
 
-
   const handleAddVideo = async (e: React.FormEvent) => {
     e.preventDefault();
     const parsed = parseYouTubeUrl(newVideo.youtubeUrl);
-
 
     if (!parsed.isValid || !parsed.embedUrl || !parsed.videoId) {
       setFeedback({
@@ -273,9 +303,11 @@ export default function AdminDashboardClient({
       return;
     }
 
-
     const created: PreviousEditionItem = {
       id: `ed-${Date.now()}`,
+      titleEn: newVideo.titleEn.trim(),
+      descriptionEn: newVideo.descriptionEn.trim(),
+      editionEn: newVideo.editionEn.trim(),
       title: newVideo.title.trim() || "DBB Editie Video",
       edition: newVideo.edition.trim() || "Previous Edition",
       description: newVideo.description.trim() || undefined,
@@ -285,18 +317,22 @@ export default function AdminDashboardClient({
       createdAt: new Date().toISOString(),
     };
 
-
     const updated: CMSData = {
       ...data,
       previousEditions: [created, ...data.previousEditions],
     };
 
-
-    await persistChanges(
-      updated,
-      `Video "${created.title}" is toegevoegd aan Previous Editions!`
-    );
+    if (
+      !(await persistChanges(
+        updated,
+        `Video "${created.title}" is toegevoegd aan Previous Editions!`,
+      ))
+    )
+      return;
     setNewVideo({
+      titleEn: "",
+      descriptionEn: "",
+      editionEn: "",
       title: "",
       edition: "Editie 2025",
       description: "",
@@ -304,11 +340,40 @@ export default function AdminDashboardClient({
     });
   };
 
+  const handleUpdateEditionField = (
+    id: string,
+    field: keyof PreviousEditionItem,
+    value: string,
+  ) => {
+    setData((prev) => {
+      const updatedEditions = prev.previousEditions.map((ed) => {
+        if (ed.id === id) {
+          const updatedEd = { ...ed, [field]: value };
+          // Als de YouTube URL wordt aangepast, probeer deze direct te parsen voor de embed URL
+          if (field === "youtubeUrl") {
+            const parsed = parseYouTubeUrl(value);
+            if (parsed.isValid && parsed.embedUrl && parsed.videoId) {
+              updatedEd.embedUrl = parsed.embedUrl;
+              updatedEd.videoId = parsed.videoId;
+            }
+          }
+          return updatedEd;
+        }
+        return ed;
+      });
+      return { ...prev, previousEditions: updatedEditions };
+    });
+  };
+
+  const handleSaveEditionEdits = async () => {
+    if (await persistChanges(data, "Video wijzigingen opgeslagen!"))
+      setEditingEditionId(null);
+  };
 
   const handleDeleteVideo = async (id: string, title: string) => {
     if (
       !window.confirm(
-        `Weet je zeker dat je de video "${title}" wilt verwijderen?`
+        `Weet je zeker dat je de video "${title}" wilt verwijderen?`,
       )
     ) {
       return;
@@ -316,36 +381,35 @@ export default function AdminDashboardClient({
     const updatedEditions = data.previousEditions.filter((v) => v.id !== id);
     await persistChanges(
       { ...data, previousEditions: updatedEditions },
-      `Video "${title}" is verwijderd.`
+      `Video "${title}" is verwijderd.`,
     );
   };
-
 
   // ============================================================================
   // MODULE 3: ROAD TO DBB LOGICA (INCL. POSITIE-INVOEGING & REORDERING)
   // ============================================================================
   const sortedMilestones = [...data.roadToDbb].sort(
-    (a, b) => a.order - b.order
+    (a, b) => a.order - b.order,
   );
-
 
   const handleAddMilestone = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMilestone.title.trim()) return;
 
-
     const targetIndex = Math.max(
       0,
       Math.min(
         sortedMilestones.length,
-        Number(newMilestone.insertAtPosition) - 1
-      )
+        Number(newMilestone.insertAtPosition) - 1,
+      ),
     );
-
 
     const created: RoadMilestoneItem = {
       id: `road-${Date.now()}`,
       order: targetIndex + 1,
+      titleEn: newMilestone.titleEn.trim(),
+      descriptionEn: newMilestone.descriptionEn.trim(),
+      dateOrPeriodEn: newMilestone.dateOrPeriodEn.trim(),
       title: newMilestone.title.trim(),
       dateOrPeriod: newMilestone.dateOrPeriod.trim() || "Nieuwe Fase",
       description: newMilestone.description.trim(),
@@ -353,24 +417,26 @@ export default function AdminDashboardClient({
       icon: newMilestone.icon,
     };
 
-
     const updatedList = [...sortedMilestones];
     updatedList.splice(targetIndex, 0, created);
-
 
     const reindexed = updatedList.map((item, idx) => ({
       ...item,
       order: idx + 1,
     }));
 
-
-    await persistChanges(
-      { ...data, roadToDbb: reindexed },
-      `Mijlpaal "${created.title}" is ingevoegd op positie #${targetIndex + 1}!`
-    );
-
+    if (
+      !(await persistChanges(
+        { ...data, roadToDbb: reindexed },
+        `Mijlpaal "${created.title}" is ingevoegd op positie #${targetIndex + 1}!`,
+      ))
+    )
+      return;
 
     setNewMilestone({
+      titleEn: "",
+      descriptionEn: "",
+      dateOrPeriodEn: "",
       title: "",
       dateOrPeriod: "",
       description: "",
@@ -380,57 +446,55 @@ export default function AdminDashboardClient({
     });
   };
 
-
   const handleMoveMilestone = async (
     index: number,
-    direction: "up" | "down"
+    direction: "up" | "down",
   ) => {
     const targetIndex = direction === "up" ? index - 1 : index + 1;
     if (targetIndex < 0 || targetIndex >= sortedMilestones.length) return;
 
-
     const list = [...sortedMilestones];
     const [moved] = list.splice(index, 1);
     list.splice(targetIndex, 0, moved);
-
 
     const reindexed = list.map((item, idx) => ({
       ...item,
       order: idx + 1,
     }));
 
-
     await persistChanges(
       { ...data, roadToDbb: reindexed },
-      `Volgorde aangepast: "${moved.title}" staat nu op positie #${targetIndex + 1}.`
+      `Volgorde aangepast: "${moved.title}" staat nu op positie #${targetIndex + 1}.`,
     );
   };
-
 
   const handleUpdateMilestoneField = (
     id: string,
     field: keyof RoadMilestoneItem,
-    value: string | number
+    value: string | number,
   ) => {
     setData((prev) => ({
       ...prev,
       roadToDbb: prev.roadToDbb.map((m) =>
-        m.id === id ? { ...m, [field]: value } : m
+        m.id === id ? { ...m, [field]: value } : m,
       ),
     }));
   };
 
-
   const handleSaveMilestoneEdits = async () => {
-    setEditingMilestoneId(null);
-    await persistChanges(data, "Wijzigingen aan de Road to DBB zijn opgeslagen!");
+    if (
+      await persistChanges(
+        data,
+        "Wijzigingen aan de Road to DBB zijn opgeslagen!",
+      )
+    )
+      setEditingMilestoneId(null);
   };
-
 
   const handleDeleteMilestone = async (id: string, title: string) => {
     if (
       !window.confirm(
-        `Weet je zeker dat je mijlpaal "${title}" wilt verwijderen?`
+        `Weet je zeker dat je mijlpaal "${title}" wilt verwijderen?`,
       )
     ) {
       return;
@@ -439,13 +503,11 @@ export default function AdminDashboardClient({
       .filter((m) => m.id !== id)
       .map((item, idx) => ({ ...item, order: idx + 1 }));
 
-
     await persistChanges(
       { ...data, roadToDbb: filtered },
-      `Mijlpaal "${title}" is verwijderd.`
+      `Mijlpaal "${title}" is verwijderd.`,
     );
   };
-
 
   // ============================================================================
   // RENDER: INLOGSCHERM INDIEN NIET INGELOGD
@@ -463,10 +525,11 @@ export default function AdminDashboardClient({
                 DBB Beheersysteem
               </h1>
               <p className="text-sm text-zinc-400 mt-1">
-                Voer het beheerderswachtwoord in om toegang te krijgen.
+                Log in met een GitHub-token voor deze repository. Het token
+                blijft alleen in het geheugen van dit tabblad en verdwijnt bij
+                uitloggen of herladen.
               </p>
             </div>
-
 
             {authError && (
               <div className="mb-4 rounded-lg bg-red-500/15 border border-red-500/30 p-3 text-xs text-red-300 flex items-center gap-2">
@@ -475,11 +538,29 @@ export default function AdminDashboardClient({
               </div>
             )}
 
-
             <form onSubmit={handleLogin} className="space-y-4">
+              <label className="block text-xs text-zinc-300">
+                GitHub repository
+                <input
+                  required
+                  value={repository}
+                  onChange={(e) => setRepository(e.target.value)}
+                  placeholder="eigenaar/repository"
+                  className="mt-1 w-full rounded-lg border border-zinc-700 bg-zinc-950 p-3 text-sm"
+                />
+              </label>
+              <label className="block text-xs text-zinc-300">
+                Branch
+                <input
+                  required
+                  value={branch}
+                  onChange={(e) => setBranch(e.target.value)}
+                  className="mt-1 w-full rounded-lg border border-zinc-700 bg-zinc-950 p-3 text-sm"
+                />
+              </label>
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
-                  Wachtwoord
+                  GitHub-token (Contents: read and write)
                 </label>
                 <input
                   type="password"
@@ -504,7 +585,6 @@ export default function AdminDashboardClient({
     );
   }
 
-
   // ============================================================================
   // RENDER: ADMIN DASHBOARD
   // ============================================================================
@@ -515,7 +595,7 @@ export default function AdminDashboardClient({
         <div className="container mx-auto px-4 max-w-6xl h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <img
-              src="/img/logo-dbb.png"
+              src={sitePath("/img/logo-dbb.png")}
               alt="DBB"
               className="h-9 w-auto object-contain"
             />
@@ -530,10 +610,9 @@ export default function AdminDashboardClient({
             </div>
           </div>
 
-
           <div className="flex items-center gap-3">
             <a
-              href="/"
+              href={sitePath("/")}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-300 hover:text-amber-400 transition-colors"
@@ -544,6 +623,7 @@ export default function AdminDashboardClient({
             <Button
               variant="outline"
               size="sm"
+              disabled={isSaving || isUploading}
               onClick={handleLogout}
               className="border-zinc-700 bg-zinc-800 text-white hover:bg-zinc-700"
             >
@@ -554,11 +634,14 @@ export default function AdminDashboardClient({
         </div>
       </header>
 
-
-      <div className="container mx-auto px-4 max-w-6xl mt-8">
+      <fieldset
+        disabled={isSaving || isUploading}
+        className="container mx-auto px-4 max-w-6xl mt-8"
+      >
         {/* Feedback Melding */}
         {feedback && (
           <div
+            role="status"
             className={`mb-6 rounded-xl border p-4 flex items-center justify-between ${
               feedback.type === "success"
                 ? "bg-emerald-500/15 border-emerald-500/30 text-emerald-300"
@@ -581,7 +664,6 @@ export default function AdminDashboardClient({
             </button>
           </div>
         )}
-
 
         {/* Navigatie Tabs */}
         <div className="flex flex-wrap gap-2 mb-8 border-b border-zinc-800 pb-4">
@@ -623,7 +705,6 @@ export default function AdminDashboardClient({
           </Button>
         </div>
 
-
         {/* ================================================================= */}
         {/* TAB 1: PROJECTEN BEHEREN                                          */}
         {/* ================================================================= */}
@@ -637,6 +718,20 @@ export default function AdminDashboardClient({
                   Nieuw Project Toevoegen
                 </h2>
                 <form onSubmit={handleAddProject} className="space-y-4">
+                  <ImageUpload
+                    onBusyChange={setIsUploading}
+                    value={newProject.image}
+                    onChange={(value) =>
+                      setNewProject((prev) => ({ ...prev, image: value }))
+                    }
+                  />
+                  <TranslationFields
+                    value={newProject}
+                    extra="categoryEn"
+                    onChange={(key, value) =>
+                      setNewProject((prev) => ({ ...prev, [key]: value }))
+                    }
+                  />
                   <div>
                     <label className="block text-xs font-semibold text-zinc-400 mb-1">
                       Project Titel *
@@ -652,7 +747,6 @@ export default function AdminDashboardClient({
                       className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-white"
                     />
                   </div>
-
 
                   <div>
                     <label className="block text-xs font-semibold text-zinc-400 mb-1">
@@ -672,7 +766,6 @@ export default function AdminDashboardClient({
                     />
                   </div>
 
-
                   <div>
                     <label className="block text-xs font-semibold text-zinc-400 mb-1">
                       Kies Bestaande Afbeelding of voer pad/URL in
@@ -680,7 +773,7 @@ export default function AdminDashboardClient({
                     <select
                       value={
                         AVAILABLE_PROJECT_IMAGES.some(
-                          (img) => img.value === newProject.image
+                          (img) => img.value === newProject.image,
                         )
                           ? newProject.image
                           : "custom"
@@ -704,7 +797,11 @@ export default function AdminDashboardClient({
                     </select>
                     <input
                       type="text"
-                      value={newProject.image}
+                      value={
+                        newProject.image.startsWith("data:")
+                          ? ""
+                          : newProject.image
+                      }
                       onChange={(e) =>
                         setNewProject({ ...newProject, image: e.target.value })
                       }
@@ -712,7 +809,6 @@ export default function AdminDashboardClient({
                       className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-white"
                     />
                   </div>
-
 
                   <div>
                     <label className="block text-xs font-semibold text-zinc-400 mb-1">
@@ -730,12 +826,11 @@ export default function AdminDashboardClient({
                     >
                       <option value="active">Actief / Lopend</option>
                       <option value="finished">
-                        Finished (met /img/finished.png stempel)
+                        Finished (geel stempel)
                       </option>
                       <option value="cancelled">Geannuleerd</option>
                     </select>
                   </div>
-
 
                   <div>
                     <label className="block text-xs font-semibold text-zinc-400 mb-1">
@@ -743,6 +838,7 @@ export default function AdminDashboardClient({
                     </label>
                     <input
                       type="text"
+                      aria-label="Nieuwe project link / URL"
                       value={newProject.link}
                       onChange={(e) =>
                         setNewProject({ ...newProject, link: e.target.value })
@@ -751,7 +847,6 @@ export default function AdminDashboardClient({
                       className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-white"
                     />
                   </div>
-
 
                   <div>
                     <label className="block text-xs font-semibold text-zinc-400 mb-1">
@@ -772,7 +867,6 @@ export default function AdminDashboardClient({
                     />
                   </div>
 
-
                   <Button
                     type="submit"
                     disabled={isSaving}
@@ -785,96 +879,221 @@ export default function AdminDashboardClient({
               </CardContent>
             </Card>
 
-
             {/* Overzicht Bestaande Projecten */}
             <div className="lg:col-span-2 space-y-4">
               <h2 className="text-lg font-bold">
                 Huidige Projecten Beheren ({data.projects.length})
               </h2>
-              {data.projects.map((proj) => (
-                <Card
-                  key={proj.id}
-                  className="border-zinc-800 bg-zinc-900 text-white overflow-hidden"
-                >
-                  <CardContent className="p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                    <div className="relative h-24 w-36 shrink-0 rounded-lg overflow-hidden bg-zinc-950 border border-zinc-800">
-                      <img
-                        src={proj.image}
-                        alt={proj.title}
-                        className="h-full w-full object-cover"
-                      />
-                      {proj.status === "finished" && (
-                        <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                          <img
-                            src="/img/finished.png"
-                            alt="Finished"
-                            className="h-12 object-contain"
-                          />
-                        </div>
-                      )}
-                    </div>
+              {data.projects.map((proj) => {
+                const isEditing = editingProjectId === proj.id;
 
-
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-bold text-base truncate">
-                          {proj.title}
-                        </h3>
-                        {proj.category && (
-                          <span className="text-xs rounded bg-zinc-800 px-2 py-0.5 text-zinc-300">
-                            {proj.category}
-                          </span>
+                return (
+                  <Card
+                    key={proj.id}
+                    className="border-zinc-800 bg-zinc-900 text-white overflow-hidden"
+                  >
+                    <CardContent className="p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                      <div className="relative h-24 w-36 shrink-0 rounded-lg overflow-hidden bg-zinc-950 border border-zinc-800">
+                        <img
+                          src={sitePath(imagePreview(proj.image))}
+                          alt={proj.title}
+                          className="h-full w-full object-cover"
+                        />
+                        {proj.status === "finished" && (
+                          <div className="absolute inset-0 flex items-center justify-center bg-yellow-950/40 backdrop-blur-[1px]">
+                            <span className="rounded-lg border-2 border-yellow-400 bg-black/80 px-2 py-1 text-xs font-black uppercase tracking-widest text-yellow-400 -rotate-6 shadow-xl">
+                              Finished
+                            </span>
+                          </div>
                         )}
                       </div>
-                      <p className="text-xs text-zinc-400 mt-1 line-clamp-2">
-                        {proj.description}
-                      </p>
 
+                      <div className="flex-1 min-w-0 w-full">
+                        {isEditing ? (
+                          <div className="space-y-3 w-full">
+                            <TranslationFields
+                              value={proj}
+                              extra="categoryEn"
+                              onChange={(key, value) =>
+                                handleUpdateProjectField(proj.id, key, value)
+                              }
+                            />
+                            <ImageUpload
+                              onBusyChange={setIsUploading}
+                              value={proj.image}
+                              onChange={(value) =>
+                                handleUpdateProjectField(
+                                  proj.id,
+                                  "image",
+                                  value,
+                                )
+                              }
+                            />
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                              <input
+                                type="text"
+                                value={proj.title}
+                                onChange={(e) =>
+                                  handleUpdateProjectField(
+                                    proj.id,
+                                    "title",
+                                    e.target.value,
+                                  )
+                                }
+                                className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-1.5 text-sm text-white"
+                                placeholder="Titel"
+                              />
+                              <input
+                                type="text"
+                                value={proj.category || ""}
+                                onChange={(e) =>
+                                  handleUpdateProjectField(
+                                    proj.id,
+                                    "category",
+                                    e.target.value,
+                                  )
+                                }
+                                className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-1.5 text-sm text-white"
+                                placeholder="Categorie (bijv. Event)"
+                              />
+                            </div>
 
-                      <div className="mt-3 flex flex-wrap items-center gap-3">
-                        <div className="flex items-center gap-2">
-                          <label className="text-xs text-zinc-400 font-medium">
-                            Status:
-                          </label>
-                          <select
-                            disabled={isSaving}
-                            value={proj.status}
-                            onChange={(e) =>
-                              handleUpdateProjectStatus(
-                                proj.id,
-                                e.target.value as ProjectStatus
-                              )
-                            }
-                            className="rounded-md border border-zinc-700 bg-zinc-950 px-2.5 py-1 text-xs font-semibold text-white"
-                          >
-                            <option value="active">🟢 Actief / Lopend</option>
-                            <option value="finished">🏆 Finished</option>
-                            <option value="cancelled">🔴 Geannuleerd</option>
-                          </select>
-                        </div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                              <input
+                                type="text"
+                                value={
+                                  proj.image.startsWith("data:")
+                                    ? ""
+                                    : proj.image
+                                }
+                                onChange={(e) =>
+                                  handleUpdateProjectField(
+                                    proj.id,
+                                    "image",
+                                    e.target.value,
+                                  )
+                                }
+                                className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-1.5 text-sm text-white"
+                                placeholder="Afbeelding URL of pad"
+                              />
+                              <input
+                                type="text"
+                                aria-label="Project link / URL"
+                                value={proj.link || ""}
+                                onChange={(e) =>
+                                  handleUpdateProjectField(
+                                    proj.id,
+                                    "link",
+                                    e.target.value,
+                                  )
+                                }
+                                className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-1.5 text-sm text-white"
+                                placeholder="Link (bijv. https://...)"
+                              />
+                            </div>
 
+                            <textarea
+                              rows={2}
+                              value={proj.description}
+                              onChange={(e) =>
+                                handleUpdateProjectField(
+                                  proj.id,
+                                  "description",
+                                  e.target.value,
+                                )
+                              }
+                              className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-1.5 text-sm text-white"
+                              placeholder="Beschrijving..."
+                            />
 
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          disabled={isSaving}
-                          onClick={() =>
-                            handleDeleteProject(proj.id, proj.title)
-                          }
-                          className="ml-auto border-red-500/30 bg-red-500/10 text-red-400 hover:bg-red-500/20 h-8 px-2.5 text-xs"
-                        >
-                          <Trash2 className="h-3.5 w-3.5 mr-1" />
-                          Verwijderen
-                        </Button>
+                            <div className="flex justify-end gap-2">
+                              <Button
+                                size="sm"
+                                onClick={handleSaveProjectEdits}
+                                className="bg-emerald-500 hover:bg-emerald-400 text-black font-bold h-8"
+                              >
+                                <Save className="h-3.5 w-3.5 mr-1" />
+                                Opslaan
+                              </Button>
+                            </div>
+                          </div>
+                        ) : (
+                          <>
+                            <div className="flex items-center gap-2">
+                              <h3 className="font-bold text-base truncate">
+                                {proj.title}
+                              </h3>
+                              {proj.category && (
+                                <span className="text-xs rounded bg-zinc-800 px-2 py-0.5 text-zinc-300">
+                                  {proj.category}
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-xs text-zinc-400 mt-1 line-clamp-2">
+                              {proj.description}
+                            </p>
+
+                            <div className="mt-3 flex flex-wrap items-center gap-3">
+                              <div className="flex items-center gap-2">
+                                <label className="text-xs text-zinc-400 font-medium">
+                                  Status:
+                                </label>
+                                <select
+                                  disabled={isSaving}
+                                  value={proj.status}
+                                  onChange={(e) =>
+                                    handleUpdateProjectStatus(
+                                      proj.id,
+                                      e.target.value as ProjectStatus,
+                                    )
+                                  }
+                                  className="rounded-md border border-zinc-700 bg-zinc-950 px-2.5 py-1 text-xs font-semibold text-white"
+                                >
+                                  <option value="active">
+                                    🟢 Actief / Lopend
+                                  </option>
+                                  <option value="finished">🏆 Finished</option>
+                                  <option value="cancelled">
+                                    🔴 Geannuleerd
+                                  </option>
+                                </select>
+                              </div>
+
+                              <div className="ml-auto flex gap-2">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  disabled={isSaving}
+                                  onClick={() => setEditingProjectId(proj.id)}
+                                  className="border-zinc-700 bg-zinc-800 text-white hover:bg-zinc-700 h-8 px-2.5 text-xs"
+                                >
+                                  <Pencil className="h-3.5 w-3.5 mr-1" />
+                                  Bewerken
+                                </Button>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  disabled={isSaving}
+                                  onClick={() =>
+                                    handleDeleteProject(proj.id, proj.title)
+                                  }
+                                  className="border-red-500/30 bg-red-500/10 text-red-400 hover:bg-red-500/20 h-8 px-2.5 text-xs"
+                                >
+                                  <Trash2 className="h-3.5 w-3.5 mr-1" />
+                                  Verwijderen
+                                </Button>
+                              </div>
+                            </div>
+                          </>
+                        )}
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
           </div>
         )}
-
 
         {/* ================================================================= */}
         {/* TAB 2: PREVIOUS EDITIONS (YOUTUBE) BEHEREN                        */}
@@ -888,8 +1107,14 @@ export default function AdminDashboardClient({
                   YouTube Video Toevoegen
                 </h2>
 
-
                 <form onSubmit={handleAddVideo} className="space-y-4">
+                  <TranslationFields
+                    value={newVideo}
+                    extra="editionEn"
+                    onChange={(key, value) =>
+                      setNewVideo((prev) => ({ ...prev, [key]: value }))
+                    }
+                  />
                   <div>
                     <label className="block text-xs font-semibold text-zinc-400 mb-1">
                       YouTube Link of Embed URL *
@@ -922,7 +1147,6 @@ export default function AdminDashboardClient({
                     )}
                   </div>
 
-
                   {parsedPreview.isValid && parsedPreview.thumbnailUrl && (
                     <div className="rounded-lg overflow-hidden border border-zinc-800 bg-black">
                       <img
@@ -932,7 +1156,6 @@ export default function AdminDashboardClient({
                       />
                     </div>
                   )}
-
 
                   <div>
                     <label className="block text-xs font-semibold text-zinc-400 mb-1">
@@ -950,7 +1173,6 @@ export default function AdminDashboardClient({
                     />
                   </div>
 
-
                   <div>
                     <label className="block text-xs font-semibold text-zinc-400 mb-1">
                       Editie / Jaartal Label
@@ -965,7 +1187,6 @@ export default function AdminDashboardClient({
                       className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-white"
                     />
                   </div>
-
 
                   <div>
                     <label className="block text-xs font-semibold text-zinc-400 mb-1">
@@ -985,7 +1206,6 @@ export default function AdminDashboardClient({
                     />
                   </div>
 
-
                   <Button
                     type="submit"
                     disabled={isSaving || !parsedPreview.isValid}
@@ -998,56 +1218,150 @@ export default function AdminDashboardClient({
               </CardContent>
             </Card>
 
-
             {/* Lijst van ingeladen YouTube Video's */}
             <div className="lg:col-span-2 space-y-4">
               <h2 className="text-lg font-bold">
                 Ingeladen YouTube Video&apos;s ({data.previousEditions.length})
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {data.previousEditions.map((video) => (
-                  <Card
-                    key={video.id}
-                    className="border-zinc-800 bg-zinc-900 text-white overflow-hidden"
-                  >
-                    <div className="aspect-video w-full bg-black">
-                      <iframe
-                        src={video.embedUrl}
-                        title={video.title}
-                        className="h-full w-full border-0"
-                        allowFullScreen
-                      />
-                    </div>
-                    <CardContent className="p-4">
-                      <span className="text-xs font-semibold text-amber-400">
-                        {video.edition}
-                      </span>
-                      <h3 className="font-bold text-sm mt-0.5">{video.title}</h3>
-                      <p className="text-[11px] text-zinc-500 truncate mt-1">
-                        {video.embedUrl}
-                      </p>
-                      <div className="mt-3 flex justify-end">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          disabled={isSaving}
-                          onClick={() =>
-                            handleDeleteVideo(video.id, video.title)
-                          }
-                          className="border-red-500/30 bg-red-500/10 text-red-400 hover:bg-red-500/20 h-8 px-2.5 text-xs"
-                        >
-                          <Trash2 className="h-3.5 w-3.5 mr-1" />
-                          Verwijderen
-                        </Button>
+                {data.previousEditions.map((video) => {
+                  const isEditing = editingEditionId === video.id;
+
+                  return (
+                    <Card
+                      key={video.id}
+                      className="border-zinc-800 bg-zinc-900 text-white overflow-hidden flex flex-col"
+                    >
+                      <div className="aspect-video w-full bg-black shrink-0">
+                        <iframe
+                          src={video.embedUrl}
+                          title={video.title}
+                          className="h-full w-full border-0"
+                          allowFullScreen
+                        />
                       </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                      <CardContent className="p-4 flex-1 flex flex-col">
+                        {isEditing ? (
+                          <div className="space-y-3 flex-1 flex flex-col">
+                            <TranslationFields
+                              value={video}
+                              extra="editionEn"
+                              onChange={(key, value) =>
+                                handleUpdateEditionField(video.id, key, value)
+                              }
+                            />
+                            <input
+                              type="text"
+                              value={video.title}
+                              onChange={(e) =>
+                                handleUpdateEditionField(
+                                  video.id,
+                                  "title",
+                                  e.target.value,
+                                )
+                              }
+                              className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-1.5 text-sm text-white"
+                              placeholder="Titel"
+                            />
+                            <input
+                              type="text"
+                              value={video.edition}
+                              onChange={(e) =>
+                                handleUpdateEditionField(
+                                  video.id,
+                                  "edition",
+                                  e.target.value,
+                                )
+                              }
+                              className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-1.5 text-sm text-white"
+                              placeholder="Editie / Label"
+                            />
+                            <input
+                              type="text"
+                              value={video.youtubeUrl}
+                              onChange={(e) =>
+                                handleUpdateEditionField(
+                                  video.id,
+                                  "youtubeUrl",
+                                  e.target.value,
+                                )
+                              }
+                              className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-1.5 text-sm text-white"
+                              placeholder="YouTube Link"
+                            />
+                            <textarea
+                              rows={2}
+                              value={video.description || ""}
+                              onChange={(e) =>
+                                handleUpdateEditionField(
+                                  video.id,
+                                  "description",
+                                  e.target.value,
+                                )
+                              }
+                              className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-1.5 text-sm text-white resize-none"
+                              placeholder="Beschrijving..."
+                            />
+                            <div className="flex justify-end gap-2 mt-auto pt-2">
+                              <Button
+                                size="sm"
+                                onClick={handleSaveEditionEdits}
+                                className="bg-emerald-500 hover:bg-emerald-400 text-black font-bold h-8 w-full"
+                              >
+                                <Save className="h-3.5 w-3.5 mr-1" />
+                                Opslaan
+                              </Button>
+                            </div>
+                          </div>
+                        ) : (
+                          <>
+                            <span className="text-xs font-semibold text-amber-400">
+                              {video.edition}
+                            </span>
+                            <h3 className="font-bold text-sm mt-0.5">
+                              {video.title}
+                            </h3>
+                            <p className="text-[11px] text-zinc-500 truncate mt-1">
+                              {video.embedUrl}
+                            </p>
+                            {video.description && (
+                              <p className="text-xs text-zinc-400 mt-2 line-clamp-2">
+                                {video.description}
+                              </p>
+                            )}
+                            <div className="mt-auto pt-4 flex justify-end gap-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                disabled={isSaving}
+                                onClick={() => setEditingEditionId(video.id)}
+                                className="border-zinc-700 bg-zinc-800 text-white hover:bg-zinc-700 h-8 px-2.5 text-xs"
+                              >
+                                <Pencil className="h-3.5 w-3.5 mr-1" />
+                                Bewerken
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                disabled={isSaving}
+                                onClick={() =>
+                                  handleDeleteVideo(video.id, video.title)
+                                }
+                                className="border-red-500/30 bg-red-500/10 text-red-400 hover:bg-red-500/20 h-8 px-2.5 text-xs"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </Button>
+                            </div>
+                          </>
+                        )}
+                      </CardContent>
+                    </Card>
+                  );
+                })}
               </div>
             </div>
           </div>
         )}
-
 
         {/* ================================================================= */}
         {/* TAB 3: ROAD TO DBB BEHEREN (INCL. TUSSENVOEGEN & VOLGORDE)        */}
@@ -1062,8 +1376,14 @@ export default function AdminDashboardClient({
                   Mijlpaal Toevoegen
                 </h2>
 
-
                 <form onSubmit={handleAddMilestone} className="space-y-4">
+                  <TranslationFields
+                    value={newMilestone}
+                    extra="dateOrPeriodEn"
+                    onChange={(key, value) =>
+                      setNewMilestone((prev) => ({ ...prev, [key]: value }))
+                    }
+                  />
                   <div>
                     <label className="block text-xs font-semibold text-zinc-400 mb-1">
                       Plaats / Positie op de Tijdlijn
@@ -1085,12 +1405,11 @@ export default function AdminDashboardClient({
                         </option>
                       ))}
                       <option value={sortedMilestones.length + 1}>
-                        Onderaan toevoegen (positie #{sortedMilestones.length + 1}
-                        )
+                        Onderaan toevoegen (positie #
+                        {sortedMilestones.length + 1})
                       </option>
                     </select>
                   </div>
-
 
                   <div>
                     <label className="block text-xs font-semibold text-zinc-400 mb-1">
@@ -1111,7 +1430,6 @@ export default function AdminDashboardClient({
                     />
                   </div>
 
-
                   <div>
                     <label className="block text-xs font-semibold text-zinc-400 mb-1">
                       Datum of Periode Label *
@@ -1130,7 +1448,6 @@ export default function AdminDashboardClient({
                       className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-white"
                     />
                   </div>
-
 
                   <div className="grid grid-cols-2 gap-3">
                     <div>
@@ -1152,7 +1469,6 @@ export default function AdminDashboardClient({
                         <option value="upcoming">Binnenkort</option>
                       </select>
                     </div>
-
 
                     <div>
                       <label className="block text-xs font-semibold text-zinc-400 mb-1">
@@ -1179,7 +1495,6 @@ export default function AdminDashboardClient({
                     </div>
                   </div>
 
-
                   <div>
                     <label className="block text-xs font-semibold text-zinc-400 mb-1">
                       Beschrijving *
@@ -1199,7 +1514,6 @@ export default function AdminDashboardClient({
                     />
                   </div>
 
-
                   <Button
                     type="submit"
                     disabled={isSaving}
@@ -1212,17 +1526,14 @@ export default function AdminDashboardClient({
               </CardContent>
             </Card>
 
-
             {/* Tijdlijn Overzicht, Bewerken & Volgorde Aanpassen */}
             <div className="lg:col-span-2 space-y-4">
               <h2 className="text-lg font-bold">
                 Road to DBB Punten & Volgorde ({sortedMilestones.length})
               </h2>
 
-
               {sortedMilestones.map((milestone, idx) => {
                 const isEditing = editingMilestoneId === milestone.id;
-
 
                 return (
                   <Card
@@ -1260,11 +1571,21 @@ export default function AdminDashboardClient({
                           </Button>
                         </div>
 
-
                         {/* Inhoud of Bewerk-formulier */}
                         <div className="flex-1 min-w-0">
                           {isEditing ? (
                             <div className="space-y-3">
+                              <TranslationFields
+                                value={milestone}
+                                extra="dateOrPeriodEn"
+                                onChange={(key, value) =>
+                                  handleUpdateMilestoneField(
+                                    milestone.id,
+                                    key,
+                                    value,
+                                  )
+                                }
+                              />
                               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <input
                                   type="text"
@@ -1273,7 +1594,7 @@ export default function AdminDashboardClient({
                                     handleUpdateMilestoneField(
                                       milestone.id,
                                       "title",
-                                      e.target.value
+                                      e.target.value,
                                     )
                                   }
                                   className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-1.5 text-sm text-white"
@@ -1286,14 +1607,13 @@ export default function AdminDashboardClient({
                                     handleUpdateMilestoneField(
                                       milestone.id,
                                       "dateOrPeriod",
-                                      e.target.value
+                                      e.target.value,
                                     )
                                   }
                                   className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-1.5 text-sm text-white"
                                   placeholder="Datum / Fase"
                                 />
                               </div>
-
 
                               <div className="grid grid-cols-2 gap-3">
                                 <select
@@ -1302,7 +1622,7 @@ export default function AdminDashboardClient({
                                     handleUpdateMilestoneField(
                                       milestone.id,
                                       "status",
-                                      e.target.value
+                                      e.target.value,
                                     )
                                   }
                                   className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-1.5 text-xs text-white"
@@ -1312,14 +1632,13 @@ export default function AdminDashboardClient({
                                   <option value="upcoming">Binnenkort</option>
                                 </select>
 
-
                                 <select
                                   value={milestone.icon}
                                   onChange={(e) =>
                                     handleUpdateMilestoneField(
                                       milestone.id,
                                       "icon",
-                                      e.target.value
+                                      e.target.value,
                                     )
                                   }
                                   className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-1.5 text-xs text-white"
@@ -1334,7 +1653,6 @@ export default function AdminDashboardClient({
                                 </select>
                               </div>
 
-
                               <textarea
                                 rows={2}
                                 value={milestone.description}
@@ -1342,12 +1660,11 @@ export default function AdminDashboardClient({
                                   handleUpdateMilestoneField(
                                     milestone.id,
                                     "description",
-                                    e.target.value
+                                    e.target.value,
                                   )
                                 }
                                 className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-1.5 text-sm text-white"
                               />
-
 
                               <div className="flex justify-end gap-2">
                                 <Button
@@ -1383,14 +1700,15 @@ export default function AdminDashboardClient({
                           )}
                         </div>
 
-
                         {/* Actieknoppen */}
                         {!isEditing && (
                           <div className="flex items-center gap-2 shrink-0">
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => setEditingMilestoneId(milestone.id)}
+                              onClick={() =>
+                                setEditingMilestoneId(milestone.id)
+                              }
                               className="border-zinc-700 bg-zinc-800 text-white hover:bg-zinc-700 h-8 px-2.5 text-xs"
                             >
                               <Pencil className="h-3.5 w-3.5 mr-1" />
@@ -1402,7 +1720,7 @@ export default function AdminDashboardClient({
                               onClick={() =>
                                 handleDeleteMilestone(
                                   milestone.id,
-                                  milestone.title
+                                  milestone.title,
                                 )
                               }
                               className="border-red-500/30 bg-red-500/10 text-red-400 hover:bg-red-500/20 h-8 px-2.5 text-xs"
@@ -1419,8 +1737,7 @@ export default function AdminDashboardClient({
             </div>
           </div>
         )}
-      </div>
+      </fieldset>
     </div>
   );
 }
-```

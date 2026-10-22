@@ -5,16 +5,17 @@ export interface ParsedYouTubeResult {
   thumbnailUrl: string | null;
 }
 
-/**
- * Zet elke gangbare YouTube-URL of losse Video-ID om naar een geldig embed-formaat.
- */
 export function parseYouTubeUrl(input: string): ParsedYouTubeResult {
   const trimmed = input.trim();
   if (!trimmed) {
-    return { isValid: false, videoId: null, embedUrl: null, thumbnailUrl: null };
+    return {
+      isValid: false,
+      videoId: null,
+      embedUrl: null,
+      thumbnailUrl: null,
+    };
   }
 
-  // Controleer of de invoer direct een 11-teken YouTube ID is
   const rawIdRegex = /^[a-zA-Z0-9_-]{11}$/;
   if (rawIdRegex.test(trimmed)) {
     return {
@@ -29,10 +30,7 @@ export function parseYouTubeUrl(input: string): ParsedYouTubeResult {
     const url = new URL(trimmed);
     let videoId: string | null = null;
 
-    if (
-      url.hostname === "youtu.be" ||
-      url.hostname === "www.youtu.be"
-    ) {
+    if (url.hostname === "youtu.be" || url.hostname === "www.youtu.be") {
       videoId = url.pathname.split("/").filter(Boolean)[0] || null;
     } else if (
       url.hostname.includes("youtube.com") ||
@@ -50,7 +48,6 @@ export function parseYouTubeUrl(input: string): ParsedYouTubeResult {
     }
 
     if (videoId) {
-      // Strip eventuele extra query-fragmenten van de ID
       const cleanId = videoId.substring(0, 11);
       if (rawIdRegex.test(cleanId)) {
         return {
@@ -62,9 +59,8 @@ export function parseYouTubeUrl(input: string): ParsedYouTubeResult {
       }
     }
   } catch {
-    // Fallback regex voor wanneer de tekst om een URL heen staat (bijv. iframe code)
     const fallbackMatch = trimmed.match(
-      /(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
+      /(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/,
     );
     if (fallbackMatch && fallbackMatch[1]) {
       const cleanId = fallbackMatch[1];

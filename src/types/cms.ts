@@ -3,10 +3,13 @@ export type ProjectStatus = "active" | "finished" | "cancelled";
 export interface ProjectItem {
   id: string;
   title: string;
+  titleEn?: string;
   description: string;
+  descriptionEn?: string;
   image: string;
   link?: string;
   category?: string;
+  categoryEn?: string;
   status: ProjectStatus;
   createdAt: string;
 }
@@ -14,8 +17,11 @@ export interface ProjectItem {
 export interface PreviousEditionItem {
   id: string;
   title: string;
+  titleEn?: string;
   edition: string;
+  editionEn?: string;
   description?: string;
+  descriptionEn?: string;
   youtubeUrl: string;
   embedUrl: string;
   videoId: string;
@@ -36,8 +42,11 @@ export interface RoadMilestoneItem {
   id: string;
   order: number;
   title: string;
+  titleEn?: string;
   dateOrPeriod: string;
+  dateOrPeriodEn?: string;
   description: string;
+  descriptionEn?: string;
   status: MilestoneStatus;
   icon: MilestoneIcon;
 }

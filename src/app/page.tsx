@@ -1,4 +1,3 @@
-```tsx
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import AboutUs from "@/components/AboutUs";
@@ -7,15 +6,11 @@ import RoadToDBB from "@/components/RoadToDBB";
 import PreviousEditions from "@/components/PreviousEditions";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
-import { getCMSData } from "@/lib/cms-storage";
-
-
-export const dynamic = "force-dynamic";
-
+import data from "@/data/cms-store.json";
+import type { CMSData } from "@/types/cms";
 
 export default async function Home() {
-  const cmsData = await getCMSData();
-
+  const cmsData = data as CMSData;
 
   return (
     <main className="min-h-screen bg-zinc-950 text-white">
@@ -30,4 +25,3 @@ export default async function Home() {
     </main>
   );
 }
-```
