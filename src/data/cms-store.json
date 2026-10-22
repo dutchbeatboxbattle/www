@@ -40,19 +40,6 @@
       "categoryEn": "Game Development"
     },
     {
-      "id": "proj-champions-league",
-      "title": "DBB Champions League",
-      "description": "Het grootste competitieve toernooi van de community waarin de beste beatboxers strijden om de titel 'kampioen der kampioenen'.",
-      "image": "/projects/champions-league-placeholder.jpg",
-      "link": "#contact",
-      "category": "Toernooi",
-      "status": "cancelled",
-      "createdAt": "2025-01-10T12:00:00.000Z",
-      "titleEn": "DBB Champions League",
-      "descriptionEn": "The community’s biggest competitive tournament, where the best beatboxers battle for the title of champion of champions.",
-      "categoryEn": "Tournament"
-    },
-    {
       "id": "proj-loop-di-loop",
       "title": "Loop-di-Loop Challenge",
       "description": "Een chaotische en razendsnelle race- en stuntuitdaging waarin precisie en snelheid centraal staan.",
@@ -64,6 +51,19 @@
       "titleEn": "Loop-di-Loop Challenge",
       "descriptionEn": "A chaotic, high-speed racing and stunt challenge focused on precision and speed.",
       "categoryEn": "Event"
+    },
+    {
+      "id": "proj-champions-league",
+      "title": "DBB Champions League",
+      "description": "Het grootste competitieve toernooi van de community waarin de beste beatboxers strijden om de titel 'kampioen der kampioenen'.",
+      "image": "/projects/champions-league-placeholder.jpg",
+      "link": "#contact",
+      "category": "Toernooi",
+      "status": "cancelled",
+      "createdAt": "2025-01-10T12:00:00.000Z",
+      "titleEn": "DBB Champions League",
+      "descriptionEn": "The community’s biggest competitive tournament, where the best beatboxers battle for the title of champion of champions.",
+      "categoryEn": "Tournament"
     }
   ],
   "previousEditions": [
@@ -132,5 +132,5 @@
       "descriptionEn": "The main event with a live broadcast, award ceremony and the crowning of the new DBB champions."
     }
   ],
-  "updatedAt": "2026-10-22T18:22:42.977Z"
+  "updatedAt": "2026-10-22T18:22:50.922Z"
 }
