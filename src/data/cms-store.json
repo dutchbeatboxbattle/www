@@ -42,14 +42,14 @@
     {
       "id": "proj-loop-di-loop",
       "title": "Loop-di-Loop Challenge",
-      "description": "Een chaotische en razendsnelle race- en stuntuitdaging waarin precisie en snelheid centraal staan.",
+      "description": "De enige loopstation competitie in Nederland.",
       "image": "/projects/loop-di-loop-placeholder.jpg",
       "link": "#projects",
       "category": "Event",
       "status": "finished",
       "createdAt": "2025-01-15T12:00:00.000Z",
-      "titleEn": "Loop-di-Loop Challenge",
-      "descriptionEn": "A chaotic, high-speed racing and stunt challenge focused on precision and speed.",
+      "titleEn": "Loop-di-Loop",
+      "descriptionEn": "The only loopstation competition in The Netherlands.",
       "categoryEn": "Event"
     },
     {
@@ -132,5 +132,5 @@
       "descriptionEn": "The main event with a live broadcast, award ceremony and the crowning of the new DBB champions."
     }
   ],
-  "updatedAt": "2026-10-22T18:24:13.012Z"
+  "updatedAt": "2026-10-22T18:24:47.098Z"
 }
