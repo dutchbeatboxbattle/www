@@ -197,6 +197,95 @@ export default function AdminDashboardClient({
   // ============================================================================
   // MODULE 1: PROJECTEN LOGICA
   // ============================================================================
+  const handleMoveItem = async (
+    collection: "projects" | "previousEditions",
+    id: string,
+    direction: -1 | 1,
+  ) => {
+    if (
+      isSaving ||
+      isUploading ||
+      editingProjectId ||
+      editingEditionId ||
+      editingMilestoneId
+    ) return;
+  
+    const items = data[collection];
+    const index = items.findIndex((item) => item.id === id);
+    const target = index + direction;
+  
+    if (index < 0 || target < 0 || target >= items.length) return;
+  
+    function reordered<T>(list: T[]): T[] {
+      const copy = [...list];
+      [copy[index], copy[target]] = [copy[target], copy[index]];
+      return copy;
+    }
+  
+    const updated: CMSData =
+      collection === "projects"
+        ? { ...data, projects: reordered(data.projects) }
+        : {
+            ...data,
+            previousEditions: reordered(data.previousEditions),
+          };
+  
+    await persistChanges(updated, "Volgorde opgeslagen!");
+  };
+  
+  const renderOrderButtons = (
+    collection: "projects" | "previousEditions",
+    id: string,
+  ) => {
+    const items = data[collection];
+    const index = items.findIndex((item) => item.id === id);
+  
+    if (index < 0) return null;
+  
+    const disabled =
+      isSaving ||
+      isUploading ||
+      Boolean(
+        editingProjectId ||
+        editingEditionId ||
+        editingMilestoneId
+      );
+  
+    return (
+      <div className="flex items-center gap-1">
+        <span className="mr-1 text-xs text-zinc-400">
+          {index + 1}/{items.length}
+        </span>
+  
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          disabled={disabled || index === 0}
+          onClick={() => handleMoveItem(collection, id, -1)}
+          aria-label={`Naar voren: ${items[index].title}`}
+          title="Eén plek naar voren (wordt direct opgeslagen)"
+          className="h-8 border-zinc-700 bg-zinc-800 px-2 text-white hover:bg-zinc-700"
+        >
+          <ArrowUp className="h-4 w-4" />
+        </Button>
+  
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          disabled={disabled || index === items.length - 1}
+          onClick={() => handleMoveItem(collection, id, 1)}
+          aria-label={`Naar achteren: ${items[index].title}`}
+          title="Eén plek naar achteren (wordt direct opgeslagen)"
+          className="h-8 border-zinc-700 bg-zinc-800 px-2 text-white hover:bg-zinc-700"
+        >
+          <ArrowDown className="h-4 w-4" />
+        </Button>
+      </div>
+    );
+  };
+  
   const handleAddProject = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newProject.title.trim()) return;
@@ -1059,7 +1148,8 @@ export default function AdminDashboardClient({
                                 </select>
                               </div>
 
-                              <div className="ml-auto flex gap-2">
+                              <div className="ml-auto flex flex-wrap gap-2">
+                                {renderOrderButtons("projects", proj.id)}
                                 <Button
                                   variant="outline"
                                   size="sm"
@@ -1329,7 +1419,8 @@ export default function AdminDashboardClient({
                                 {video.description}
                               </p>
                             )}
-                            <div className="mt-auto pt-4 flex justify-end gap-2">
+                            <div className="mt-auto pt-4 flex flex-wrap justify-end gap-2">   
+                              {renderOrderButtons("previousEditions", video.id)}
                               <Button
                                 variant="outline"
                                 size="sm"
