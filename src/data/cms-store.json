@@ -40,19 +40,6 @@
       "categoryEn": "Game Development"
     },
     {
-      "id": "proj-loop-di-loop",
-      "title": "Loop-di-Loop Challenge",
-      "description": "Een chaotische en razendsnelle race- en stuntuitdaging waarin precisie en snelheid centraal staan.",
-      "image": "/projects/loop-di-loop-placeholder.jpg",
-      "link": "#projects",
-      "category": "Event",
-      "status": "finished",
-      "createdAt": "2025-01-15T12:00:00.000Z",
-      "titleEn": "Loop-di-Loop Challenge",
-      "descriptionEn": "A chaotic, high-speed racing and stunt challenge focused on precision and speed.",
-      "categoryEn": "Event"
-    },
-    {
       "id": "proj-community-jams",
       "title": "DBB Community Game Jams",
       "description": "DBB organiseert met regelmaat beatbox jams of doet geregeld partnerships met verschillende game jams.",
@@ -64,6 +51,19 @@
       "titleEn": "DBB Community Game Jams",
       "descriptionEn": "DBB regularly organises beatbox jams and partners with various game jams.",
       "categoryEn": "Community"
+    },
+    {
+      "id": "proj-loop-di-loop",
+      "title": "Loop-di-Loop Challenge",
+      "description": "Een chaotische en razendsnelle race- en stuntuitdaging waarin precisie en snelheid centraal staan.",
+      "image": "/projects/loop-di-loop-placeholder.jpg",
+      "link": "#projects",
+      "category": "Event",
+      "status": "finished",
+      "createdAt": "2025-01-15T12:00:00.000Z",
+      "titleEn": "Loop-di-Loop Challenge",
+      "descriptionEn": "A chaotic, high-speed racing and stunt challenge focused on precision and speed.",
+      "categoryEn": "Event"
     }
   ],
   "previousEditions": [
@@ -132,5 +132,5 @@
       "descriptionEn": "The main event with a live broadcast, award ceremony and the crowning of the new DBB champions."
     }
   ],
-  "updatedAt": "2026-10-22T18:07:44.396Z"
+  "updatedAt": "2026-10-22T18:22:26.418Z"
 }
