@@ -1,91 +1,104 @@
-export interface Project {
-    id: string;
-    title: string;
-    description: string;
-    image: string; // placeholder or actual image path
-    buttonText?: string;
-    buttonLink?: string;
-    isFinished: boolean;
-    overlayImage?: string; // optional overlay image for finished projects
-}
+import { CMSData, ProjectItem, PreviousEditionItem, RoadMilestoneItem } from "@/types/cms";
 
-// Projects array - easily add or remove projects here
-export const projects: Project[] = [
-    {
-        id: "league-of-beatbox26",
-        title: "League Of Beatbox 2026",
-        description:
-            "League Of Beatbox 2026, organized by Boom Snap Clap, will be the first qualifier for the upcoming Dutch Championships.",
-        image: "/projects/champions-league-placeholder.jpg",
-        buttonText: "Boom Snap Clap Website",
-        buttonLink: "https://boomsnapclap.nl",
-        isFinished: false,
-    },
-    {
-        id: "dbb x whc",
-        title: "Beats en Basketball in Zaandam!",
-        description:
-            "DBB stond op de World Hoops Classic op 2 mei 2026 in Sporthal Zaanstad Zuid met een exclusieve experience. Waar de basketbal en beatbox culture elkaar ontmoette in een dag vol actie!",
-        image: "/projects/fotoclp.avif",
-        buttonText: "Website and info",
-        buttonLink: "https://www.thenorthsplash.nl/world-hoops-classic-zaanstad/dutch-beatbox-battle",
-        isFinished: true,
-    },
-    {
-        id: "loop-di-loop",
-        title: "Loop-di-Loop",
-        description:
-            "Het loopstation format waarbij beatboxers live complete tracks opbouwen met stemlagen, ritmes, baslijnen en melodieën.",
-        image: "/projects/loop-di-loop-placeholder.jpg",
-        buttonText: "Editie Afgelopen",
-        buttonLink: "mailto:dutchbeatboxbattle@gmail.com?subject=Aanmelden%20Mailinglist",
-        isFinished: false,
-    },
-    {
-        id: "beat-em-up",
-        title: "Beat 'Em Up",
-        description:
-            "Een intense battle format waarin beatboxers head-to-head gaan. Snelle eliminatie rondes, pure skill en maximale energie.",
-        image: "/projects/beat-em-up-placeholder.jpg",
-        buttonText: "Editie Afgelopen",
-        buttonLink: "mailto:dutchbeatboxbattle@gmail.com?subject=Aanmelden%20Mailinglist",
-        isFinished: false,
-    },
-    {
-        id: "community-day",
-        title: "Dutch Beatbox Community Day",
-        description:
-            "Een dag gewijd aan de Nederlandse beatboxcommunity, met workshops, battles en netwerkmogelijkheden.",
-        image: "/projects/community.jpg",
-        buttonText: "TBA",
-        buttonLink: "mailto:dutchbeatboxbattle@gmail.com?subject=Aanmelden%20Mailinglist",
-        isFinished: false,
-    },
-    {
-        id: "community-jams",
-        title: "Official Community Jams",
-        description:
-            "De officiele jamsessies georganiseerd door Dutch Beatbox Battle, veelal in Almere.",
-        image: "/projects/jams.jpg",
-        buttonText: "",
-        buttonLink: "",
-        isFinished: false,
-    },
+export const initialProjects: ProjectItem[] = [
+  {
+    id: "proj-champions-league",
+    title: "DBB Champions League",
+    description:
+      "Het grootste competitieve toernooi van de community waarin de beste teams strijden om de felbegeerde DBB-titel.",
+    image: "/projects/champions-league-placeholder.jpg",
+    link: "#contact",
+    category: "Toernooi",
+    status: "active",
+    createdAt: "2025-01-10T12:00:00.000Z",
+  },
+  {
+    id: "proj-beat-em-up",
+    title: "DBB Beat 'Em Up",
+    description:
+      "Een actievolle arcade beat 'em up ervaring ontwikkeld met en voor de DBB-community.",
+    image: "/projects/beat-em-up-placeholder.jpg",
+    link: "#projects",
+    category: "Game Development",
+    status: "active",
+    createdAt: "2025-01-12T12:00:00.000Z",
+  },
+  {
+    id: "proj-loop-di-loop",
+    title: "Loop-di-Loop Challenge",
+    description:
+      "Een chaotische en razendsnelle race- en stuntuitdaging waarin precisie en snelheid centraal staan.",
+    image: "/projects/loop-di-loop-placeholder.jpg",
+    link: "#projects",
+    category: "Event",
+    status: "finished",
+    createdAt: "2025-01-15T12:00:00.000Z",
+  },
+  {
+    id: "proj-community-jams",
+    title: "DBB Community Game Jams",
+    description:
+      "Samen binnen 48 uur creatieve games en prototypes bouwen tijdens onze energieke community jams.",
+    image: "/projects/jams.jpg",
+    link: "#projects",
+    category: "Community",
+    status: "active",
+    createdAt: "2025-01-18T12:00:00.000Z",
+  },
 ];
 
-// Helper function to add a new project
-export const addProject = (project: Project): Project[] => {
-    return [...projects, project];
+export const initialPreviousEditions: PreviousEditionItem[] = [
+  {
+    id: "ed-1",
+    title: "DBB Aftermovie & Hoogtepunten",
+    edition: "Editie 1",
+    description: "Bekijk de beste momenten, wedstrijden en sfeer van onze eerdere DBB-editie.",
+    youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    embedUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    videoId: "dQw4w9WgXcQ",
+    createdAt: "2025-01-01T12:00:00.000Z",
+  },
+];
+
+export const initialRoadToDbb: RoadMilestoneItem[] = [
+  {
+    id: "road-1",
+    order: 1,
+    title: "Concept & Community Kick-off",
+    dateOrPeriod: "Fase 1",
+    description:
+      "Het samenbrengen van de kerngroep, het vastleggen van de spelregels en het openen van de inschrijvingen.",
+    status: "completed",
+    icon: "flag",
+  },
+  {
+    id: "road-2",
+    order: 2,
+    title: "Kwalificatierondes & Game Jams",
+    dateOrPeriod: "Fase 2",
+    description:
+      "Teams en deelnemers nemen het tegen elkaar op in de voorrondes en bouwen mee aan nieuwe community-projecten.",
+    status: "current",
+    icon: "zap",
+  },
+  {
+    id: "road-3",
+    order: 3,
+    title: "De Grote DBB Finale",
+    dateOrPeriod: "Fase 3",
+    description:
+      "Het hoofdevenement met live uitzending, prijsuitreiking en de kroning van de nieuwe DBB-kampioenen.",
+    status: "upcoming",
+    icon: "trophy",
+  },
+];
+
+export const defaultCMSData: CMSData = {
+  projects: initialProjects,
+  previousEditions: initialPreviousEditions,
+  roadToDbb: initialRoadToDbb,
+  updatedAt: new Date().toISOString(),
 };
 
-// Helper function to remove a project by id
-export const removeProject = (projectId: string): Project[] => {
-    return projects.filter((p) => p.id !== projectId);
-};
-
-// Helper function to mark a project as finished
-export const markProjectFinished = (projectId: string): Project[] => {
-    return projects.map((p) =>
-        p.id === projectId ? { ...p, isFinished: true } : p
-    );
-};
+// Backwards-compatible export
+export const projects = initialProjects;
