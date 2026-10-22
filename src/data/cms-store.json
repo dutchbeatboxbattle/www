@@ -15,14 +15,14 @@
     },
     {
       "id": "proj-community-jams",
-      "title": "DBB Community Game Jams",
+      "title": "DBB Community Jams",
       "description": "DBB organiseert met regelmaat beatbox jams of doet geregeld partnerships met verschillende game jams.",
       "image": "/projects/jams.jpg",
       "link": "#projects",
       "category": "Community",
       "status": "active",
       "createdAt": "2025-01-18T12:00:00.000Z",
-      "titleEn": "DBB Community Game Jams",
+      "titleEn": "DBB Community Jams",
       "descriptionEn": "DBB regularly organises beatbox jams and partners with various game jams.",
       "categoryEn": "Community"
     },
@@ -132,5 +132,5 @@
       "descriptionEn": "The main event with a live broadcast, award ceremony and the crowning of the new DBB champions."
     }
   ],
-  "updatedAt": "2026-10-22T18:23:43.626Z"
+  "updatedAt": "2026-10-22T18:24:13.012Z"
 }
