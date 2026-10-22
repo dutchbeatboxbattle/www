@@ -16,9 +16,9 @@ const events: Event[] = [
     {
         id: "qualifier-1",
         title: "QUALIFIER ROUND #1",
-        location: "Urban Matterz Festival",
-        date: "20 september 2026",
-        link: "https://urbanmatterz.nl",
+        location: "League Of Beatbox",
+        date: "14 november 2026",
+        link: "https://boomsnapclap.nl",
         isTBA: false,
     },
     {
