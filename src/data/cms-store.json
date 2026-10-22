@@ -105,7 +105,8 @@
       "icon": "trophy",
       "titleEn": "League Of Beatbox 2026",
       "dateOrPeriodEn": "14 november 2026",
-      "descriptionEn": "The LOB competition organized by BoomSnapClap in Theater Zuidplein in Rotterdam. Also a Dutch & World Championships qualifier."
+      "descriptionEn": "The LOB competition organized by BoomSnapClap in Theater Zuidplein in Rotterdam. Also a Dutch & World Championships qualifier.",
+      "link": "Https://boomsnapclap.nl"
     },
     {
       "id": "road-2",
@@ -132,5 +133,5 @@
       "descriptionEn": "More info soon."
     }
   ],
-  "updatedAt": "2026-10-22T18:33:13.105Z"
+  "updatedAt": "2026-10-22T21:55:25.131Z"
 }
