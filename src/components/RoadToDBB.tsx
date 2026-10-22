@@ -31,7 +31,7 @@ const events: Event[] = [
     },
     {
         id: "finals",
-        title: "DUTCH BEATBOX BATTLE 2026",
+        title: "DUTCH BEATBOX BATTLE 2027",
         location: "TBA",
         date: "TBA",
         link: "#",
