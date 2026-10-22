@@ -14,19 +14,6 @@
       "createdAt": "2026-10-22T18:07:43.359Z"
     },
     {
-      "id": "proj-champions-league",
-      "title": "DBB Champions League",
-      "description": "Het grootste competitieve toernooi van de community waarin de beste beatboxers strijden om de titel 'kampioen der kampioenen'.",
-      "image": "/projects/champions-league-placeholder.jpg",
-      "link": "#contact",
-      "category": "Toernooi",
-      "status": "cancelled",
-      "createdAt": "2025-01-10T12:00:00.000Z",
-      "titleEn": "DBB Champions League",
-      "descriptionEn": "The community’s biggest competitive tournament, where the best beatboxers battle for the title of champion of champions.",
-      "categoryEn": "Tournament"
-    },
-    {
       "id": "proj-beat-em-up",
       "title": "DBB Beat 'Em Up",
       "description": "Een actievolle arcade beat 'em up ervaring ontwikkeld met en voor de DBB-community.",
@@ -38,6 +25,19 @@
       "titleEn": "DBB Beat 'Em Up",
       "descriptionEn": "An action-packed arcade beat ’em up experience developed with and for the DBB community.",
       "categoryEn": "Game Development"
+    },
+    {
+      "id": "proj-champions-league",
+      "title": "DBB Champions League",
+      "description": "Het grootste competitieve toernooi van de community waarin de beste beatboxers strijden om de titel 'kampioen der kampioenen'.",
+      "image": "/projects/champions-league-placeholder.jpg",
+      "link": "#contact",
+      "category": "Toernooi",
+      "status": "cancelled",
+      "createdAt": "2025-01-10T12:00:00.000Z",
+      "titleEn": "DBB Champions League",
+      "descriptionEn": "The community’s biggest competitive tournament, where the best beatboxers battle for the title of champion of champions.",
+      "categoryEn": "Tournament"
     },
     {
       "id": "proj-community-jams",
@@ -132,5 +132,5 @@
       "descriptionEn": "The main event with a live broadcast, award ceremony and the crowning of the new DBB champions."
     }
   ],
-  "updatedAt": "2026-10-22T18:22:26.418Z"
+  "updatedAt": "2026-10-22T18:22:31.690Z"
 }
