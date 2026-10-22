@@ -113,7 +113,7 @@
       "title": "Binnenkort meer info",
       "dateOrPeriod": "Fase 2",
       "description": "Binnenkort meer info",
-      "status": "current",
+      "status": "upcoming",
       "icon": "zap",
       "titleEn": "Soon to be announced",
       "dateOrPeriodEn": "Phase 2",
@@ -132,5 +132,5 @@
       "descriptionEn": "More info soon."
     }
   ],
-  "updatedAt": "2026-10-22T18:28:33.738Z"
+  "updatedAt": "2026-10-22T18:29:50.596Z"
 }
