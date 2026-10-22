@@ -122,15 +122,15 @@
     {
       "id": "road-3",
       "order": 3,
-      "title": "De Grote DBB Finale",
-      "dateOrPeriod": "Fase 3",
-      "description": "Het hoofdevenement met live uitzending, prijsuitreiking en de kroning van de nieuwe DBB-kampioenen.",
+      "title": "DBB 2027",
+      "dateOrPeriod": "2027",
+      "description": "Meer info binnenkort.",
       "status": "upcoming",
       "icon": "trophy",
-      "titleEn": "The Grand DBB Final",
-      "dateOrPeriodEn": "Phase 3",
-      "descriptionEn": "The main event with a live broadcast, award ceremony and the crowning of the new DBB champions."
+      "titleEn": "DBB 2027",
+      "dateOrPeriodEn": "2027",
+      "descriptionEn": "More info soon."
     }
   ],
-  "updatedAt": "2026-10-22T18:28:00.691Z"
+  "updatedAt": "2026-10-22T18:28:33.738Z"
 }
