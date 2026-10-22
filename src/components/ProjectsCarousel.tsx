@@ -1,192 +1,208 @@
+```tsx
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import useEmblaCarousel from "embla-carousel-react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+
+import React, { useState } from "react";
+import { ProjectItem } from "@/types/cms";
+import { initialProjects } from "@/data/projects";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { projects, type Project } from "@/data/projects";
-import Image from "next/image";
+import {
+  ChevronLeft,
+  ChevronRight,
+  ExternalLink,
+  CheckCircle2,
+  Clock,
+  XCircle,
+} from "lucide-react";
 
-interface ProjectCardProps {
-  project: Project;
+
+interface ProjectsCarouselProps {
+  initialData?: ProjectItem[];
 }
 
-function ProjectCard({ project }: ProjectCardProps) {
+
+export default function ProjectsCarousel({
+  initialData,
+}: ProjectsCarouselProps) {
+  const projects =
+    initialData && initialData.length > 0 ? initialData : initialProjects;
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+
+  const handlePrev = () => {
+    setCurrentIndex((prev) => (prev === 0 ? projects.length - 1 : prev - 1));
+  };
+
+
+  const handleNext = () => {
+    setCurrentIndex((prev) => (prev === projects.length - 1 ? 0 : prev + 1));
+  };
+
+
+  const renderStatusBadge = (status: ProjectItem["status"]) => {
+    switch (status) {
+      case "active":
+        return (
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-semibold text-emerald-400 border border-emerald-500/30">
+            <Clock className="h-3.5 w-3.5" />
+            Actief / Lopend
+          </span>
+        );
+      case "finished":
+        return (
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/20 px-3 py-1 text-xs font-semibold text-amber-300 border border-amber-500/30">
+            <CheckCircle2 className="h-3.5 w-3.5" />
+            Finished
+          </span>
+        );
+      case "cancelled":
+        return (
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-red-500/20 px-3 py-1 text-xs font-semibold text-red-400 border border-red-500/30">
+            <XCircle className="h-3.5 w-3.5" />
+            Geannuleerd
+          </span>
+        );
+    }
+  };
+
+
   return (
-    <Card className="relative h-full overflow-hidden card-hover group">
-      {/* Image area */}
-      {/* Image area */}
-        <div className="relative h-48 md:h-56 overflow-hidden bg-black">
-          <Image
-            src={project.image}
-            alt={project.title}
-            fill
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            className="object-cover object-center transition-transform duration-500 group-hover:scale-105"
-          />
-
-          {/* Gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0f0f0f] via-black/20 to-transparent" />
-
-          {/* Orange accent line */}
-          <div className="absolute bottom-0 left-0 right-0 h-1 gradient-orange transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
-        </div>
-
-        {/* Finished overlay */}
-        {project.isFinished && (
-          <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none opacity-80">
-            <div className="absolute inset-0 bg-black/50 backdrop-blur-[1px]" />
-        
-            <div className="relative z-10 w-[105%] transform rotate-12">
-              <div className="bg-[#FF6B00] px-4 py-3 rounded-lg shadow-xl flex items-center justify-center">
-                <span className="whitespace-nowrap text-[clamp(14px,4vw,28px)] font-bold text-white tracking-[0.12em] leading-none">
-                  EDITION FINISHED
-                </span>
-              </div>
-            </div>
+    <section id="projects" className="py-20 bg-zinc-950 text-white relative">
+      <div className="container mx-auto px-4 max-w-6xl">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
+          <div>
+            <span className="text-sm font-bold uppercase tracking-widest text-amber-500">
+              Onze Initiatieven
+            </span>
+            <h2 className="text-3xl md:text-5xl font-extrabold mt-2 tracking-tight">
+              DBB Projecten
+            </h2>
           </div>
-        )}
 
-      <CardHeader className="pb-2">
-        <CardTitle className="text-xl md:text-2xl text-white group-hover:text-[#FF6B00] transition-colors">
-          {project.title}
-        </CardTitle>
-      </CardHeader>
 
-      <CardContent className="pb-4">
-        <p className="text-white/70 text-sm md:text-base leading-relaxed">
-          {project.description}
-        </p>
-      </CardContent>
-
-    <CardFooter className="relative z-30">
-  {project.buttonText && project.buttonLink && (
-    <a
-      href={project.buttonLink}
-      target="_blank"
-      rel="noopener noreferrer"
-      className={`inline-flex h-9 w-full items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors ${
-        project.isFinished
-          ? "bg-white text-[#FF6B00] hover:bg-white/90 opacity-80"
-          : "bg-[#FF6B00] text-white hover:bg-[#FF8533]"
-      }`}
-    >
-      {project.buttonText}
-    </a>
-  )}
-</CardFooter>
-    </Card>
-  );
-}
-
-export default function ProjectsCarousel() {
-  const [emblaRef, emblaApi] = useEmblaCarousel({
-    align: "start",
-    loop: true,
-    skipSnaps: false,
-    containScroll: "trimSnaps",
-  });
-
-  const [canScrollPrev, setCanScrollPrev] = useState(false);
-  const [canScrollNext, setCanScrollNext] = useState(false);
-
-  const scrollPrev = useCallback(() => {
-    if (emblaApi) emblaApi.scrollPrev();
-  }, [emblaApi]);
-
-  const scrollNext = useCallback(() => {
-    if (emblaApi) emblaApi.scrollNext();
-  }, [emblaApi]);
-
-  const onSelect = useCallback(() => {
-    if (!emblaApi) return;
-    setCanScrollPrev(emblaApi.canScrollPrev());
-    setCanScrollNext(emblaApi.canScrollNext());
-  }, [emblaApi]);
-
-  useEffect(() => {
-    if (!emblaApi) return;
-    onSelect();
-    emblaApi.on("select", onSelect);
-    emblaApi.on("reInit", onSelect);
-    return () => {
-      emblaApi.off("select", onSelect);
-      emblaApi.off("reInit", onSelect);
-    };
-  }, [emblaApi, onSelect]);
-
-  return (
-    <section id="projects" className="py-24 md:py-32 relative overflow-hidden bg-gradient-to-b from-transparent via-[#0a0a0a] to-transparent">
-      {/* Background accent */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#FF6B00] rounded-full blur-[300px] opacity-5" />
-
-      <div className="container mx-auto px-4 relative z-10">
-        {/* Section Header */}
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-6xl font-bold text-white mb-4">
-            ONZE <span className="text-gradient-orange">PROJECTEN</span>
-          </h2>
-          <p className="text-white/60 text-lg max-w-2xl mx-auto">
-            Naast het NK realiseren wij nog andere projecten. Ontdek hieronder onze beatbox evenementen, battles en community projecten.
-          </p>
-          <div className="w-24 h-1 gradient-orange mx-auto rounded-full mt-6" />
+          {projects.length > 1 && (
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={handlePrev}
+                className="rounded-full border-zinc-800 bg-zinc-900/80 text-white hover:bg-zinc-800"
+                aria-label="Vorig project"
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={handleNext}
+                className="rounded-full border-zinc-800 bg-zinc-900/80 text-white hover:bg-zinc-800"
+                aria-label="Volgend project"
+              >
+                <ChevronRight className="h-5 w-5" />
+              </Button>
+            </div>
+          )}
         </div>
 
-        {/* Carousel */}
-        <div className="relative">
-          {/* Navigation buttons */}
-          <button
-            type="button"
-            onClick={scrollPrev}
-            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-20 w-12 h-12 rounded-full bg-[#FF6B00] text-white flex items-center justify-center hover:bg-[#FF8533] transition-colors shadow-lg disabled:opacity-50 disabled:cursor-not-allowed hidden md:flex"
-            disabled={!canScrollPrev}
-          >
-            <ChevronLeft size={24} />
-          </button>
 
-          <button
-            type="button"
-            onClick={scrollNext}
-            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-20 w-12 h-12 rounded-full bg-[#FF6B00] text-white flex items-center justify-center hover:bg-[#FF8533] transition-colors shadow-lg disabled:opacity-50 disabled:cursor-not-allowed hidden md:flex"
-            disabled={!canScrollNext}
-          >
-            <ChevronRight size={24} />
-          </button>
+        {/* Grid weergave op desktop + uitgelichte carrousel-focus */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {projects.map((project, index) => {
+            const isHighlighted = index === currentIndex;
+            const isCancelled = project.status === "cancelled";
+            const isFinished = project.status === "finished";
 
-          {/* Embla carousel */}
-          <div className="embla overflow-hidden" ref={emblaRef}>
-            <div className="embla__container flex">
-              {projects.map((project) => (
-                <div
-                  key={project.id}
-                  className="embla__slide flex-[0_0_100%] sm:flex-[0_0_50%] lg:flex-[0_0_33.333%] min-w-0 px-3"
-                >
-                  <ProjectCard project={project} />
+
+            return (
+              <Card
+                key={project.id}
+                onClick={() => setCurrentIndex(index)}
+                className={`group relative overflow-hidden rounded-2xl border transition-all duration-300 cursor-pointer bg-zinc-900/90 ${
+                  isHighlighted
+                    ? "border-amber-500/80 shadow-lg shadow-amber-500/10 ring-1 ring-amber-500/50"
+                    : "border-zinc-800 hover:border-zinc-700"
+                } ${isCancelled ? "opacity-75 grayscale-[40%]" : ""}`}
+              >
+                {/* Afbeelding Container */}
+                <div className="relative h-56 w-full overflow-hidden bg-zinc-950">
+                  <img
+                    src={project.image || "/projects/01.webp"}
+                    alt={project.title}
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/30 to-transparent" />
+
+
+                  {/* Status Badge linksboven */}
+                  <div className="absolute top-3 left-3 z-20">
+                    {renderStatusBadge(project.status)}
+                  </div>
+
+
+                  {/* Categorie rechtsboven */}
+                  {project.category && (
+                    <span className="absolute top-3 right-3 z-20 rounded-md bg-black/60 backdrop-blur-md px-2.5 py-1 text-xs font-medium text-zinc-200 border border-white/10">
+                      {project.category}
+                    </span>
+                  )}
+
+
+                  {/* FINISHED PNG OVERLAY (indien status === 'finished') */}
+                  {isFinished && (
+                    <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/40 backdrop-blur-[1px] pointer-events-none">
+                      <img
+                        src="/img/finished.png"
+                        alt="Finished"
+                        className="max-h-36 w-auto object-contain drop-shadow-2xl transform -rotate-6"
+                      />
+                    </div>
+                  )}
+
+
+                  {/* GEANNULEERD OVERLAY (indien status === 'cancelled') */}
+                  {isCancelled && (
+                    <div className="absolute inset-0 z-10 flex items-center justify-center bg-red-950/40 backdrop-blur-[1px] pointer-events-none">
+                      <span className="rounded-lg border-2 border-red-500 bg-black/80 px-4 py-1.5 text-sm font-black uppercase tracking-widest text-red-500 -rotate-6 shadow-xl">
+                        Geannuleerd
+                      </span>
+                    </div>
+                  )}
                 </div>
-              ))}
-            </div>
-          </div>
 
-          {/* Mobile navigation dots */}
-          <div className="flex justify-center gap-2 mt-8 md:hidden">
-            <button
-              type="button"
-              onClick={scrollPrev}
-              className="w-10 h-10 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-[#FF6B00] transition-colors"
-            >
-              <ChevronLeft size={20} />
-            </button>
-            <button
-              type="button"
-              onClick={scrollNext}
-              className="w-10 h-10 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-[#FF6B00] transition-colors"
-            >
-              <ChevronRight size={20} />
-            </button>
-          </div>
+
+                {/* Content */}
+                <CardContent className="p-6">
+                  <h3 className="text-xl font-bold text-white mb-2 group-hover:text-amber-400 transition-colors">
+                    {project.title}
+                  </h3>
+                  <p className="text-sm text-zinc-400 leading-relaxed mb-5 line-clamp-3">
+                    {project.description}
+                  </p>
+
+
+                  {project.link && !isCancelled && (
+                    <a
+                      href={project.link}
+                      target={project.link.startsWith("http") ? "_blank" : undefined}
+                      rel={
+                        project.link.startsWith("http")
+                          ? "noopener noreferrer"
+                          : undefined
+                      }
+                      className="inline-flex items-center gap-2 text-sm font-semibold text-amber-400 hover:text-amber-300 transition-colors"
+                    >
+                      Meer informatie
+                      <ExternalLink className="h-4 w-4" />
+                    </a>
+                  )}
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       </div>
     </section>
   );
 }
+```
