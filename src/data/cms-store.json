@@ -1,6 +1,19 @@
 {
   "projects": [
     {
+      "id": "proj-1792692463359",
+      "titleEn": "LEAGUE OF BEATBOX 2026",
+      "descriptionEn": "The 14th of November it's time for the LOB organized by Boom Snap Clap. DBB will throw in an extra price for the winner!",
+      "categoryEn": "EVENT",
+      "title": "LEAGUE OF BEATBOX 2026",
+      "description": "Meld je nu aan voor de LOB georganiseerd door Boom Snap Clap. De winnaars krijgen een extra prijs van DBB!",
+      "image": "/uploads/dfa2a668-3729-44ad-ac98-3bdce85962d7.webp",
+      "link": "https://www.boomsnapclap.nl",
+      "category": "EVENT",
+      "status": "active",
+      "createdAt": "2026-10-22T18:07:43.359Z"
+    },
+    {
       "id": "proj-champions-league",
       "title": "DBB Champions League",
       "description": "Het grootste competitieve toernooi van de community waarin de beste beatboxers strijden om de titel 'kampioen der kampioenen'.",
@@ -119,5 +132,5 @@
       "descriptionEn": "The main event with a live broadcast, award ceremony and the crowning of the new DBB champions."
     }
   ],
-  "updatedAt": "2026-10-22T18:02:51.775Z"
+  "updatedAt": "2026-10-22T18:07:44.396Z"
 }
