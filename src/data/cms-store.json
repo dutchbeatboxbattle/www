@@ -14,19 +14,6 @@
       "createdAt": "2026-10-22T18:07:43.359Z"
     },
     {
-      "id": "proj-beat-em-up",
-      "title": "DBB Beat 'Em Up",
-      "description": "Een actievolle arcade beat 'em up ervaring ontwikkeld met en voor de DBB-community.",
-      "image": "/projects/beat-em-up-placeholder.jpg",
-      "link": "#projects",
-      "category": "Game Development",
-      "status": "finished",
-      "createdAt": "2025-01-12T12:00:00.000Z",
-      "titleEn": "DBB Beat 'Em Up",
-      "descriptionEn": "An action-packed arcade beat ’em up experience developed with and for the DBB community.",
-      "categoryEn": "Game Development"
-    },
-    {
       "id": "proj-community-jams",
       "title": "DBB Community Game Jams",
       "description": "DBB organiseert met regelmaat beatbox jams of doet geregeld partnerships met verschillende game jams.",
@@ -38,6 +25,19 @@
       "titleEn": "DBB Community Game Jams",
       "descriptionEn": "DBB regularly organises beatbox jams and partners with various game jams.",
       "categoryEn": "Community"
+    },
+    {
+      "id": "proj-beat-em-up",
+      "title": "DBB Beat 'Em Up",
+      "description": "Een actievolle arcade beat 'em up ervaring ontwikkeld met en voor de DBB-community.",
+      "image": "/projects/beat-em-up-placeholder.jpg",
+      "link": "#projects",
+      "category": "Game Development",
+      "status": "finished",
+      "createdAt": "2025-01-12T12:00:00.000Z",
+      "titleEn": "DBB Beat 'Em Up",
+      "descriptionEn": "An action-packed arcade beat ’em up experience developed with and for the DBB community.",
+      "categoryEn": "Game Development"
     },
     {
       "id": "proj-champions-league",
@@ -132,5 +132,5 @@
       "descriptionEn": "The main event with a live broadcast, award ceremony and the crowning of the new DBB champions."
     }
   ],
-  "updatedAt": "2026-10-22T18:22:36.773Z"
+  "updatedAt": "2026-10-22T18:22:42.977Z"
 }
