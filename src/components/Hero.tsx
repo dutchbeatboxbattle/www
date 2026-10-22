@@ -1,11 +1,13 @@
 "use client";
-import { sitePath } from "@/lib/site-path";
+import { sitePath, isSafeLink } from "@/lib/site-path";
 import { useLanguage } from "@/lib/LanguageContext";
 
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
 
-export default function Hero() {
+export default function Hero({ joinUrl }: { joinUrl?: string }) {
+  const link = joinUrl?.trim();
+  const href = link && isSafeLink(link) ? sitePath(link) : undefined;
   const { t } = useLanguage();
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
@@ -78,15 +80,18 @@ export default function Hero() {
             <ChevronDown className="ml-2 h-5 w-5 group-hover:translate-y-1 transition-transform" />
           </Button>
 
-          <a
-            href="https://forms.gle/phh9i81W7fSdwfGU7"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Button size="xl" variant="outline">
+          {href ? (
+            <a href={href} target="_blank" rel="noopener noreferrer"
+              className={buttonVariants({ size: "xl", variant: "outline" })}>
+              {t("Doe Mee", "Join In")}
+            </a>
+          ) : (
+            <Button size="xl" variant="outline" disabled
+              className="border-zinc-700 bg-zinc-900 text-zinc-500 disabled:opacity-100"
+              title={t("Er is momenteel geen evenement om aan deel te nemen", "There is currently no event open for participation")}>
               {t("Doe Mee", "Join In")}
             </Button>
-          </a>
+          )}
         </div>
       </div>
 

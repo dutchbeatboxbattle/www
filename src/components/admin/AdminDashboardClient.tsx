@@ -74,7 +74,7 @@ export default function AdminDashboardClient({
   const [authLoading, setAuthLoading] = useState(false);
 
   const [data, setData] = useState<CMSData>(initialData);
-  const [activeTab, setActiveTab] = useState<"projects" | "editions" | "road">(
+  const [activeTab, setActiveTab] = useState<"projects" | "editions" | "road" | "settings">(
     "projects",
   );
   const [isUploading, setIsUploading] = useState(false);
@@ -122,6 +122,7 @@ export default function AdminDashboardClient({
     dateOrPeriodEn: "",
     title: "",
     dateOrPeriod: "",
+    link: "",
     description: "",
     status: "upcoming" as MilestoneStatus,
     icon: "flag" as MilestoneIcon,
@@ -194,69 +195,43 @@ export default function AdminDashboardClient({
     }
   };
 
-  // ============================================================================
-  // MODULE 1: PROJECTEN LOGICA
-  // ============================================================================
   const handleMoveItem = async (
     collection: "projects" | "previousEditions",
     id: string,
     direction: -1 | 1,
   ) => {
-    if (
-      isSaving ||
-      isUploading ||
-      editingProjectId ||
-      editingEditionId ||
-      editingMilestoneId
-    ) return;
-  
+    if (isSaving || isUploading || editingProjectId || editingEditionId || editingMilestoneId) return;
     const items = data[collection];
     const index = items.findIndex((item) => item.id === id);
     const target = index + direction;
-  
     if (index < 0 || target < 0 || target >= items.length) return;
-  
+
     function reordered<T>(list: T[]): T[] {
       const copy = [...list];
       [copy[index], copy[target]] = [copy[target], copy[index]];
       return copy;
     }
-  
-    const updated: CMSData =
-      collection === "projects"
-        ? { ...data, projects: reordered(data.projects) }
-        : {
-            ...data,
-            previousEditions: reordered(data.previousEditions),
-          };
-  
+
+    const updated: CMSData = collection === "projects"
+      ? { ...data, projects: reordered(data.projects) }
+      : { ...data, previousEditions: reordered(data.previousEditions) };
+
     await persistChanges(updated, "Volgorde opgeslagen!");
   };
-  
+
   const renderOrderButtons = (
     collection: "projects" | "previousEditions",
     id: string,
   ) => {
     const items = data[collection];
     const index = items.findIndex((item) => item.id === id);
-  
     if (index < 0) return null;
-  
-    const disabled =
-      isSaving ||
-      isUploading ||
-      Boolean(
-        editingProjectId ||
-        editingEditionId ||
-        editingMilestoneId
-      );
-  
+    const disabled = isSaving || isUploading || Boolean(
+      editingProjectId || editingEditionId || editingMilestoneId
+    );
     return (
       <div className="flex items-center gap-1">
-        <span className="mr-1 text-xs text-zinc-400">
-          {index + 1}/{items.length}
-        </span>
-  
+        <span className="mr-1 text-xs text-zinc-400">{index + 1}/{items.length}</span>
         <Button
           type="button"
           variant="outline"
@@ -269,7 +244,6 @@ export default function AdminDashboardClient({
         >
           <ArrowUp className="h-4 w-4" />
         </Button>
-  
         <Button
           type="button"
           variant="outline"
@@ -285,7 +259,10 @@ export default function AdminDashboardClient({
       </div>
     );
   };
-  
+
+  // ============================================================================
+  // MODULE 1: PROJECTEN LOGICA
+  // ============================================================================
   const handleAddProject = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newProject.title.trim()) return;
@@ -500,6 +477,7 @@ export default function AdminDashboardClient({
       descriptionEn: newMilestone.descriptionEn.trim(),
       dateOrPeriodEn: newMilestone.dateOrPeriodEn.trim(),
       title: newMilestone.title.trim(),
+      link: newMilestone.link.trim() || undefined,
       dateOrPeriod: newMilestone.dateOrPeriod.trim() || "Nieuwe Fase",
       description: newMilestone.description.trim(),
       status: newMilestone.status,
@@ -528,6 +506,7 @@ export default function AdminDashboardClient({
       dateOrPeriodEn: "",
       title: "",
       dateOrPeriod: "",
+    link: "",
       description: "",
       status: "upcoming",
       icon: "flag",
@@ -792,7 +771,31 @@ export default function AdminDashboardClient({
             <MapPin className="h-4 w-4 mr-2" />
             3. Road to DBB ({data.roadToDbb.length})
           </Button>
+          <Button onClick={() => setActiveTab("settings")}
+            variant={activeTab === "settings" ? "default" : "outline"}
+            className={activeTab === "settings" ? "bg-amber-500 text-black font-bold hover:bg-amber-400" : "border-zinc-800 bg-zinc-900 text-zinc-300 hover:bg-zinc-800"}>
+            4. Website-instellingen
+          </Button>
         </div>
+
+        {activeTab === "settings" && (
+          <Card className="border-zinc-800 bg-zinc-900 text-white max-w-2xl">
+            <CardContent className="p-6 space-y-4">
+              <h2 className="text-lg font-bold">Doe mee-knop</h2>
+              <p className="text-sm text-zinc-400">Laat de link leeg om de knop grijs en niet klikbaar te maken. Vul een link in om deelname weer mogelijk te maken. De link opent in een nieuw tabblad.</p>
+              <label className="block text-sm font-medium">
+                Deelname-link (optioneel)
+                <input value={data.joinUrl || ""} placeholder="https://..."
+                  onChange={event => setData(previous => ({ ...previous, joinUrl: event.target.value }))}
+                  className="mt-2 block w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-white" />
+              </label>
+              <p className="text-sm text-zinc-400">Status na opslaan: {data.joinUrl?.trim() ? "actief" : "uitgeschakeld"}.</p>
+              <Button onClick={() => persistChanges({ ...data, joinUrl: data.joinUrl?.trim() || "" }, "Website-instellingen opgeslagen!")}>
+                <Save className="h-4 w-4 mr-2" />Instellingen opslaan
+              </Button>
+            </CardContent>
+          </Card>
+        )}
 
         {/* ================================================================= */}
         {/* TAB 1: PROJECTEN BEHEREN                                          */}
@@ -1419,7 +1422,7 @@ export default function AdminDashboardClient({
                                 {video.description}
                               </p>
                             )}
-                            <div className="mt-auto pt-4 flex flex-wrap justify-end gap-2">   
+                            <div className="mt-auto pt-4 flex flex-wrap justify-end gap-2">
                               {renderOrderButtons("previousEditions", video.id)}
                               <Button
                                 variant="outline"
@@ -1468,6 +1471,10 @@ export default function AdminDashboardClient({
                 </h2>
 
                 <form onSubmit={handleAddMilestone} className="space-y-4">
+<label className="block text-xs font-semibold text-zinc-400">Link (optioneel)
+  <input type="text" value={newMilestone.link} onChange={e => setNewMilestone(prev => ({...prev, link: e.target.value}))} placeholder="https://..." className="mt-1 w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-white" />
+  <span className="mt-1 block font-normal">Met een link opent het hele blok in een nieuw tabblad. Leeg laten mag.</span>
+</label>
                   <TranslationFields
                     value={newMilestone}
                     extra="dateOrPeriodEn"
@@ -1757,6 +1764,10 @@ export default function AdminDashboardClient({
                                 className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-1.5 text-sm text-white"
                               />
 
+<label className="block text-xs font-semibold text-zinc-400">Link (optioneel)
+  <input type="text" value={milestone.link || ""} onChange={e => handleUpdateMilestoneField(milestone.id, "link", e.target.value)} placeholder="https://..." className="mt-1 w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-white" />
+  <span className="mt-1 block font-normal">Opent in een nieuw tabblad. Maak leeg om de link te verwijderen.</span>
+</label>
                               <div className="flex justify-end gap-2">
                                 <Button
                                   size="sm"

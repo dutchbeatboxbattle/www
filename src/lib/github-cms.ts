@@ -84,6 +84,10 @@ export async function connectGitHub(
   return { connection, data };
 }
 export function validateContent(data: CMSData) {
+  if (!isSafeLink(data.joinUrl?.trim() || "")) throw new Error("Ongeldige Doe mee-link. Gebruik https://, /pad of #anker.");
+  for (const milestone of data.roadToDbb) {
+    if (!isSafeLink(milestone.link?.trim() || "")) throw new Error(`Ongeldige link bij ${milestone.title}. Gebruik https://, /pad of #anker.`);
+  }
   for (const project of data.projects) {
     if (!isSafeLink(project.link || ""))
       throw new Error(

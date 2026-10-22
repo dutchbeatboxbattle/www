@@ -2,6 +2,7 @@
 import { useLanguage } from "@/lib/LanguageContext";
 
 import React from "react";
+import { isSafeLink, sitePath } from "@/lib/site-path";
 import { RoadMilestoneItem } from "@/types/cms";
 import { initialRoadToDbb } from "@/data/projects";
 import {
@@ -104,6 +105,9 @@ export default function RoadToDBB({ initialData }: RoadToDBBProps) {
 
           <div className="space-y-12">
             {milestones.map((milestone, index) => {
+              const link = milestone.link?.trim();
+              const href = link && isSafeLink(link) ? sitePath(link) : undefined;
+              const CardTag = href ? "a" : "div";
               const isEven = index % 2 === 0;
               const isCurrent = milestone.status === "current";
               const isCompleted = milestone.status === "completed";
@@ -134,8 +138,12 @@ export default function RoadToDBB({ initialData }: RoadToDBBProps) {
                       isEven ? "md:pr-12" : "md:pl-12"
                     }`}
                   >
-                    <div
-                      className={`rounded-2xl border p-6 bg-zinc-900/90 transition-all duration-300 group-hover:-translate-y-1.5 ${
+                    <CardTag
+                      href={href}
+                      target={href ? "_blank" : undefined}
+                      rel={href ? "noopener noreferrer" : undefined}
+                      aria-label={href ? `${t(milestone.title, milestone.titleEn)} — ${t("opent in een nieuw tabblad", "opens in a new tab")}` : undefined}
+                      className={`block focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400 rounded-2xl border p-6 bg-zinc-900/90 transition-all duration-300 group-hover:-translate-y-1.5 ${
                         isCurrent
                           ? "border-amber-500/70 shadow-[0_10px_35px_-10px_rgba(245,158,11,0.25)]"
                           : "border-zinc-800 group-hover:border-amber-500/50 group-hover:shadow-[0_10px_30px_-12px_rgba(245,158,11,0.18)]"
@@ -160,7 +168,7 @@ export default function RoadToDBB({ initialData }: RoadToDBBProps) {
                           milestone.descriptionEn,
                         )}
                       </p>
-                    </div>
+                    </CardTag>
                   </div>
                 </div>
               );

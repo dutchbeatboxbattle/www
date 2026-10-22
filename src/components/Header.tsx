@@ -85,12 +85,7 @@ export default function Header() {
             </div>
           </Link>
 
-          {/* Tagline - Desktop only */}
-          <div className="hidden lg:block flex-1 text-center">
-            <p className="text-white/80 text-sm italic"></p>
-          </div>
-
-          <LanguageSwitch />
+          <div className="flex-1" />
           {/* Navigation */}
           <nav className="hidden xl:flex items-center gap-6">
             <Link
@@ -117,7 +112,9 @@ export default function Header() {
             >
               Contact
             </Link>
-            <div className="flex items-center gap-3 ml-2">
+
+          </nav>
+            <div className="flex items-center gap-2 ml-3">
               <a
                 href="https://www.youtube.com/c/DutchBeatboxBattle"
                 target="_blank"
@@ -136,8 +133,8 @@ export default function Header() {
               >
                 <InstagramIcon size={18} />
               </a>
+              <LanguageSwitch />
             </div>
-          </nav>
 
           {/* Mobile menu button */}
           <button
@@ -186,26 +183,7 @@ export default function Header() {
               >
                 Contact
               </Link>
-              <div className="flex items-center gap-4 px-6 py-3">
-                <a
-                  href="https://www.youtube.com/c/DutchBeatboxBattle"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-white/60 hover:text-[#FF6B00] transition-colors"
-                  aria-label="YouTube"
-                >
-                  <YouTubeIcon size={22} />
-                </a>
-                <a
-                  href="https://instagram.com/dutchbeatboxbattle"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-white/60 hover:text-[#FF6B00] transition-colors"
-                  aria-label="Instagram"
-                >
-                  <InstagramIcon size={20} />
-                </a>
-              </div>
+
             </nav>
           </div>
         )}

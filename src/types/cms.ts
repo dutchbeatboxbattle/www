@@ -39,6 +39,7 @@ export type MilestoneIcon =
   | "calendar";
 
 export interface RoadMilestoneItem {
+  link?: string;
   id: string;
   order: number;
   title: string;
@@ -52,6 +53,7 @@ export interface RoadMilestoneItem {
 }
 
 export interface CMSData {
+  joinUrl?: string;
   projects: ProjectItem[];
   previousEditions: PreviousEditionItem[];
   roadToDbb: RoadMilestoneItem[];

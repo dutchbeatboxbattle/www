@@ -2,7 +2,7 @@
 import { sitePath, isSafeLink } from "@/lib/site-path";
 import { useLanguage } from "@/lib/LanguageContext";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { ProjectItem } from "@/types/cms";
 import { initialProjects } from "@/data/projects";
 import { Card, CardContent } from "@/components/ui/card";
@@ -27,6 +27,10 @@ export default function ProjectsCarousel({
   const { t } = useLanguage();
   const rawProjects = initialData ?? initialProjects;
 
+  const drag = useRef<{ id: number; x: number; y: number; dx: number; horizontal: boolean } | null>(null);
+  const suppressClick = useRef(false);
+  const [dragOffset, setDragOffset] = useState(0);
+  const [dragging, setDragging] = useState(false);
   const [itemsPerView, setItemsPerView] = useState(3);
   const [currentIndex, setCurrentIndex] = useState(rawProjects.length);
   const [isTransitioning, setIsTransitioning] = useState(true);
@@ -64,18 +68,18 @@ export default function ProjectsCarousel({
   }, [total]);
 
   const handleNext = useCallback(() => {
-    if (isAnimating) return;
+    if (isAnimating || rawProjects.length < 2) return;
     setIsAnimating(true);
     setIsTransitioning(true);
     setCurrentIndex((prev) => prev + 1);
-  }, [isAnimating]);
+  }, [isAnimating, rawProjects.length]);
 
   const handlePrev = useCallback(() => {
-    if (isAnimating) return;
+    if (isAnimating || rawProjects.length < 2) return;
     setIsAnimating(true);
     setIsTransitioning(true);
     setCurrentIndex((prev) => prev - 1);
-  }, [isAnimating]);
+  }, [isAnimating, rawProjects.length]);
 
   // Na het afronden van de schuif-animatie: spring onzichtbaar terug naar de middelste set
   const handleTransitionEnd = () => {
@@ -105,7 +109,41 @@ export default function ProjectsCarousel({
     return () => clearTimeout(timer);
   }, [isAnimating, currentIndex, total]);
 
-  const activeDotIndex = total ? ((currentIndex % total) + total) % total : 0;
+  const onPointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+    suppressClick.current = false;
+    if (!event.isPrimary || event.button !== 0 || isAnimating || rawProjects.length < 2) return;
+    drag.current = { id: event.pointerId, x: event.clientX, y: event.clientY, dx: 0, horizontal: false };
+  };
+  const onPointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    const gesture = drag.current;
+    if (!gesture || gesture.id !== event.pointerId) return;
+    const dx = event.clientX - gesture.x;
+    const dy = event.clientY - gesture.y;
+    if (!gesture.horizontal) {
+      if (Math.max(Math.abs(dx), Math.abs(dy)) < 8) return;
+      if (Math.abs(dy) > Math.abs(dx)) { drag.current = null; return; }
+      gesture.horizontal = true;
+      suppressClick.current = true;
+      event.currentTarget.setPointerCapture(event.pointerId);
+      setDragging(true);
+    }
+    gesture.dx = dx;
+    const limit = event.currentTarget.clientWidth / itemsPerView;
+    setDragOffset(Math.max(-limit, Math.min(limit, dx)));
+  };
+  const finishDrag = (event: React.PointerEvent<HTMLDivElement>, cancelled = false) => {
+    const gesture = drag.current;
+    if (!gesture || gesture.id !== event.pointerId) return;
+    drag.current = null;
+    setDragging(false);
+    setDragOffset(0);
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
+    if (!cancelled && gesture.horizontal && Math.abs(gesture.dx) >= 40) {
+      if (gesture.dx < 0) handleNext(); else handlePrev();
+    }
+  };
+
+  const activeDotIndex = rawProjects.length ? ((currentIndex % rawProjects.length) + rawProjects.length) % rawProjects.length : 0;
 
   const renderStatusBadge = (status: ProjectItem["status"]) => {
     switch (status) {
@@ -159,11 +197,12 @@ export default function ProjectsCarousel({
           </div>
 
           {/* Navigatieknoppen rechtsboven */}
-          <div className="flex items-center gap-3">
+          <div className="hidden md:flex items-center gap-3">
             <Button
               variant="outline"
               size="icon"
               onClick={handlePrev}
+              disabled={rawProjects.length < 2}
               className="h-11 w-11 rounded-full border-zinc-800 bg-zinc-900/90 text-white transition-all duration-300 hover:scale-110 hover:border-amber-500 hover:bg-amber-500 hover:text-black hover:shadow-[0_0_25px_rgba(245,158,11,0.5)] active:scale-95"
               aria-label={t("Vorig project", "Previous project")}
             >
@@ -173,6 +212,7 @@ export default function ProjectsCarousel({
               variant="outline"
               size="icon"
               onClick={handleNext}
+              disabled={rawProjects.length < 2}
               className="h-11 w-11 rounded-full border-zinc-800 bg-zinc-900/90 text-white transition-all duration-300 hover:scale-110 hover:border-amber-500 hover:bg-amber-500 hover:text-black hover:shadow-[0_0_25px_rgba(245,158,11,0.5)] active:scale-95"
               aria-label={t("Volgend project", "Next project")}
             >
@@ -181,39 +221,37 @@ export default function ProjectsCarousel({
           </div>
         </div>
 
-        {/* Carrousel Wrapper met zwevende pijlen links en rechts */}
+        {/* Carrousel met muis- en touchbediening */}
         <div className="relative group/carousel">
-          {/* Zwevende pijl Links (desktop) */}
-          <button
-            type="button"
-            onClick={handlePrev}
-            aria-label={t("Scroll naar links", "Scroll left")}
-            className="hidden lg:flex absolute -left-6 top-1/2 -translate-y-1/2 z-30 h-12 w-12 items-center justify-center rounded-full border border-zinc-700/80 bg-zinc-900/95 text-white shadow-xl backdrop-blur-md transition-all duration-300 opacity-0 group-hover/carousel:opacity-100 hover:scale-110 hover:border-amber-500 hover:bg-amber-500 hover:text-black hover:shadow-[0_0_30px_rgba(245,158,11,0.6)]"
-          >
-            <ChevronLeft className="h-6 w-6" />
-          </button>
-
-          {/* Zwevende pijl Rechts (desktop) */}
-          <button
-            type="button"
-            onClick={handleNext}
-            aria-label={t("Scroll naar rechts", "Scroll right")}
-            className="hidden lg:flex absolute -right-6 top-1/2 -translate-y-1/2 z-30 h-12 w-12 items-center justify-center rounded-full border border-zinc-700/80 bg-zinc-900/95 text-white shadow-xl backdrop-blur-md transition-all duration-300 opacity-0 group-hover/carousel:opacity-100 hover:scale-110 hover:border-amber-500 hover:bg-amber-500 hover:text-black hover:shadow-[0_0_30px_rgba(245,158,11,0.6)]"
-          >
-            <ChevronRight className="h-6 w-6" />
-          </button>
-
           {/* 1-Rij Viewport */}
-          <div className="overflow-hidden py-4 -my-4 px-1 -mx-1">
+          <div
+            role="region"
+            aria-roledescription="carousel"
+            aria-label={t("Projecten — sleep of gebruik de pijltjestoetsen", "Projects — drag or use the arrow keys")}
+            tabIndex={0}
+            className={`overflow-hidden py-4 -my-4 px-1 -mx-1 select-none touch-pan-y focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400 ${dragging ? "cursor-grabbing" : "cursor-grab"}`}
+            onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={event => finishDrag(event)}
+            onPointerCancel={event => finishDrag(event, true)}
+            onLostPointerCapture={event => { if (event.target === event.currentTarget) finishDrag(event, true); }}
+            onDragStart={event => event.preventDefault()}
+            onClickCapture={event => { if (suppressClick.current && event.detail !== 0) { event.preventDefault(); event.stopPropagation(); } }}
+            onKeyDown={event => {
+              if (event.target !== event.currentTarget) return;
+              if (event.key === "ArrowLeft") { event.preventDefault(); handlePrev(); }
+              if (event.key === "ArrowRight") { event.preventDefault(); handleNext(); }
+            }}
+          >
             <div
-              onTransitionEnd={handleTransitionEnd}
+              onTransitionEnd={event => { if (event.target === event.currentTarget && event.propertyName === "transform") handleTransitionEnd(); }}
               className={`flex ${
-                isTransitioning
+                isTransitioning && !dragging
                   ? "transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
                   : ""
               }`}
               style={{
-                transform: `translate3d(-${translatePercentage}%, 0, 0)`,
+                transform: `translate3d(calc(-${translatePercentage}% + ${dragOffset}px), 0, 0)`,
               }}
             >
               {extendedProjects.map((project, idx) => {
@@ -237,6 +275,7 @@ export default function ProjectsCarousel({
                       {/* Afbeelding Container */}
                       <div className="relative h-56 w-full overflow-hidden bg-zinc-950">
                         <img
+                          draggable={false}
                           src={sitePath(project.image || "/projects/01.webp")}
                           alt={t(project.title || "", project.titleEn)}
                           className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
@@ -322,17 +361,18 @@ export default function ProjectsCarousel({
 
         {/* Paginatie Indicatoren onderaan */}
         <div className="mt-10 flex items-center justify-center gap-2.5">
-          {baseList.map((item, index) => {
+          {rawProjects.map((item, index) => {
             const isActive = index === activeDotIndex;
             return (
               <button
                 key={item.id + index}
                 type="button"
                 onClick={() => {
-                  if (isAnimating) return;
+                  if (isAnimating || rawProjects.length < 2) return;
                   setIsTransitioning(true);
                   setCurrentIndex(total + index);
                 }}
+                aria-current={isActive ? "true" : undefined}
                 aria-label={`${t("Ga naar project", "Go to project")} ${index + 1}`}
                 className={`h-2.5 rounded-full transition-all duration-300 ${
                   isActive

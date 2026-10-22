@@ -15,7 +15,7 @@ export default async function Home() {
   return (
     <main className="min-h-screen bg-zinc-950 text-white">
       <Header />
-      <Hero />
+      <Hero joinUrl={cmsData.joinUrl} />
       <AboutUs />
       <ProjectsCarousel initialData={cmsData.projects} />
       <RoadToDBB initialData={cmsData.roadToDbb} />

@@ -1,69 +1,56 @@
 {
   "projects": [
     {
-      "id": "proj-1792692463359",
-      "titleEn": "LEAGUE OF BEATBOX 2026",
-      "descriptionEn": "The 14th of November it's time for the LOB organized by Boom Snap Clap. DBB will throw in an extra price for the winner!",
-      "categoryEn": "EVENT",
-      "title": "LEAGUE OF BEATBOX 2026",
-      "description": "Meld je nu aan voor de LOB georganiseerd door Boom Snap Clap. De winnaars krijgen een extra prijs van DBB!",
-      "image": "/uploads/dfa2a668-3729-44ad-ac98-3bdce85962d7.webp",
-      "link": "https://www.boomsnapclap.nl",
-      "category": "EVENT",
-      "status": "active",
-      "createdAt": "2026-10-22T18:07:43.359Z"
-    },
-    {
-      "id": "proj-community-jams",
-      "title": "DBB Community Jams",
-      "description": "DBB organiseert met regelmaat beatbox jams of doet geregeld partnerships met verschillende game jams.",
-      "image": "/projects/jams.jpg",
-      "link": "#projects",
-      "category": "Community",
-      "status": "active",
-      "createdAt": "2025-01-18T12:00:00.000Z",
-      "titleEn": "DBB Community Jams",
-      "descriptionEn": "DBB regularly organises beatbox jams and partners with various game jams.",
-      "categoryEn": "Community"
-    },
-    {
-      "id": "proj-beat-em-up",
-      "title": "Beat 'Em Up - Beat Battle",
-      "description": "Een actievolle arcade beat 'em up ervaring ontwikkeld met en voor de DBB-community. Ook een beat battle, georganiseerd in Almere.",
-      "image": "/projects/beat-em-up-placeholder.jpg",
-      "link": "#projects",
-      "category": "Event",
-      "status": "finished",
-      "createdAt": "2025-01-12T12:00:00.000Z",
-      "titleEn": "Beat 'Em Up - Beat Battle",
-      "descriptionEn": "An action-packed arcade beat ’em up experience developed with and for the DBB community.",
-      "categoryEn": "Event"
-    },
-    {
-      "id": "proj-loop-di-loop",
-      "title": "Loop-di-Loop Challenge",
-      "description": "De enige loopstation competitie in Nederland.",
-      "image": "/projects/loop-di-loop-placeholder.jpg",
-      "link": "#projects",
-      "category": "Event",
-      "status": "finished",
-      "createdAt": "2025-01-15T12:00:00.000Z",
-      "titleEn": "Loop-di-Loop",
-      "descriptionEn": "The only loopstation competition in The Netherlands.",
-      "categoryEn": "Event"
-    },
-    {
       "id": "proj-champions-league",
       "title": "DBB Champions League",
-      "description": "Het grootste competitieve toernooi van de community waarin de beste beatboxers strijden om de titel 'kampioen der kampioenen'. Geannuleerd voor nu maar komt binnenkort.",
+      "description": "Het grootste competitieve toernooi van de community waarin de beste beatboxers strijden om de titel 'kampioen der kampioenen'.",
       "image": "/projects/champions-league-placeholder.jpg",
       "link": "#contact",
       "category": "Toernooi",
       "status": "cancelled",
       "createdAt": "2025-01-10T12:00:00.000Z",
       "titleEn": "DBB Champions League",
-      "descriptionEn": "The community’s biggest competitive tournament, where the best beatboxers battle for the title of champion of champions. Canceled for now but coming soon!",
+      "descriptionEn": "The community’s biggest competitive tournament, where the best beatboxers battle for the title of champion of champions.",
       "categoryEn": "Tournament"
+    },
+    {
+      "id": "proj-beat-em-up",
+      "title": "DBB Beat 'Em Up",
+      "description": "Een actievolle arcade beat 'em up ervaring ontwikkeld met en voor de DBB-community.",
+      "image": "/projects/beat-em-up-placeholder.jpg",
+      "link": "#projects",
+      "category": "Game Development",
+      "status": "finished",
+      "createdAt": "2025-01-12T12:00:00.000Z",
+      "titleEn": "DBB Beat 'Em Up",
+      "descriptionEn": "An action-packed arcade beat ’em up experience developed with and for the DBB community.",
+      "categoryEn": "Game Development"
+    },
+    {
+      "id": "proj-loop-di-loop",
+      "title": "Loop-di-Loop Challenge",
+      "description": "Een chaotische en razendsnelle race- en stuntuitdaging waarin precisie en snelheid centraal staan.",
+      "image": "/projects/loop-di-loop-placeholder.jpg",
+      "link": "#projects",
+      "category": "Event",
+      "status": "finished",
+      "createdAt": "2025-01-15T12:00:00.000Z",
+      "titleEn": "Loop-di-Loop Challenge",
+      "descriptionEn": "A chaotic, high-speed racing and stunt challenge focused on precision and speed.",
+      "categoryEn": "Event"
+    },
+    {
+      "id": "proj-community-jams",
+      "title": "DBB Community Game Jams",
+      "description": "DBB organiseert met regelmaat beatbox jams of doet geregeld partnerships met verschillende game jams.",
+      "image": "/projects/jams.jpg",
+      "link": "#projects",
+      "category": "Community",
+      "status": "active",
+      "createdAt": "2025-01-18T12:00:00.000Z",
+      "titleEn": "DBB Community Game Jams",
+      "descriptionEn": "DBB regularly organises beatbox jams and partners with various game jams.",
+      "categoryEn": "Community"
     }
   ],
   "previousEditions": [
@@ -98,39 +85,39 @@
     {
       "id": "road-1",
       "order": 1,
-      "title": "League Of Beatbox 2026",
-      "dateOrPeriod": "14 november 2026",
-      "description": "De LOB competitie georganiseerd door BoomSnapClap in Theater Zuidplein in Rotterdam. Winne kwalificiteerd zich voor het aankomende Nederlands- en Wereldkampioenschap.",
-      "status": "current",
-      "icon": "trophy",
-      "titleEn": "League Of Beatbox 2026",
-      "dateOrPeriodEn": "14 november 2026",
-      "descriptionEn": "The LOB competition organized by BoomSnapClap in Theater Zuidplein in Rotterdam. Also a Dutch & World Championships qualifier."
+      "title": "Concept & Community Kick-off",
+      "dateOrPeriod": "Fase 1",
+      "description": "Het samenbrengen van de kerngroep, het vastleggen van de spelregels en het openen van de inschrijvingen.",
+      "status": "completed",
+      "icon": "flag",
+      "titleEn": "Concept & Community Kick-off",
+      "dateOrPeriodEn": "Phase 1",
+      "descriptionEn": "Bringing the core team together, setting the rules and opening registration."
     },
     {
       "id": "road-2",
       "order": 2,
-      "title": "Binnenkort meer info",
+      "title": "Kwalificatierondes & Game Jams",
       "dateOrPeriod": "Fase 2",
-      "description": "Binnenkort meer info",
-      "status": "upcoming",
+      "description": "Teams en deelnemers nemen het tegen elkaar op in de voorrondes en bouwen mee aan nieuwe community-projecten.",
+      "status": "current",
       "icon": "zap",
-      "titleEn": "Soon to be announced",
+      "titleEn": "Qualifiers & Game Jams",
       "dateOrPeriodEn": "Phase 2",
-      "descriptionEn": "Soon to be announced"
+      "descriptionEn": "Teams and participants compete in the qualifying rounds and help build new community projects."
     },
     {
       "id": "road-3",
       "order": 3,
-      "title": "DBB 2027",
-      "dateOrPeriod": "2027",
-      "description": "Meer info binnenkort.",
+      "title": "De Grote DBB Finale",
+      "dateOrPeriod": "Fase 3",
+      "description": "Het hoofdevenement met live uitzending, prijsuitreiking en de kroning van de nieuwe DBB-kampioenen.",
       "status": "upcoming",
       "icon": "trophy",
-      "titleEn": "DBB 2027",
-      "dateOrPeriodEn": "2027",
-      "descriptionEn": "More info soon."
+      "titleEn": "The Grand DBB Final",
+      "dateOrPeriodEn": "Phase 3",
+      "descriptionEn": "The main event with a live broadcast, award ceremony and the crowning of the new DBB champions."
     }
   ],
-  "updatedAt": "2026-10-22T18:33:13.105Z"
+  "updatedAt": "2026-10-22T15:23:26.521Z"
 }
