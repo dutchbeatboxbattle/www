@@ -110,14 +110,14 @@
     {
       "id": "road-2",
       "order": 2,
-      "title": "Kwalificatierondes & Game Jams",
+      "title": "Binnenkort meer info",
       "dateOrPeriod": "Fase 2",
-      "description": "Teams en deelnemers nemen het tegen elkaar op in de voorrondes en bouwen mee aan nieuwe community-projecten.",
+      "description": "Binnenkort meer info",
       "status": "current",
       "icon": "zap",
-      "titleEn": "Qualifiers & Game Jams",
+      "titleEn": "Soon to be announced",
       "dateOrPeriodEn": "Phase 2",
-      "descriptionEn": "Teams and participants compete in the qualifying rounds and help build new community projects."
+      "descriptionEn": "Soon to be announced"
     },
     {
       "id": "road-3",
@@ -132,5 +132,5 @@
       "descriptionEn": "The main event with a live broadcast, award ceremony and the crowning of the new DBB champions."
     }
   ],
-  "updatedAt": "2026-10-22T18:27:38.370Z"
+  "updatedAt": "2026-10-22T18:28:00.691Z"
 }
