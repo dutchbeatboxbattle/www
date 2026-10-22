@@ -12,13 +12,13 @@ export interface Project {
 // Projects array - easily add or remove projects here
 export const projects: Project[] = [
     {
-        id: "dutch-beatbox-champions-league",
-        title: "Dutch Beatbox Champions League",
+        id: "league-of-beatbox26",
+        title: "League Of Beatbox 2026",
         description:
-            "Een competitie voor de (oud) kampioenen human beatbox in Nederland. Tegelijk met DBB qualifier. Tijdens Urban Matterz 2026.",
+            "League Of Beatbox 2026, organized by Boom Snap Clap, will be the first qualifier for the upcoming Dutch Championships.",
         image: "/projects/champions-league-placeholder.jpg",
-        buttonText: "DBB Qualifier Inschrijving",
-        buttonLink: "https://forms.gle/phh9i81W7fSdwfGU7",
+        buttonText: "Boom Snap Clap Website",
+        buttonLink: "https://boomsnapclap.nl",
         isFinished: false,
     },
     {
