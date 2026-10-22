@@ -55,14 +55,14 @@
     {
       "id": "proj-champions-league",
       "title": "DBB Champions League",
-      "description": "Het grootste competitieve toernooi van de community waarin de beste beatboxers strijden om de titel 'kampioen der kampioenen'.",
+      "description": "Het grootste competitieve toernooi van de community waarin de beste beatboxers strijden om de titel 'kampioen der kampioenen'. Geannuleerd voor nu maar komt binnenkort.",
       "image": "/projects/champions-league-placeholder.jpg",
       "link": "#contact",
       "category": "Toernooi",
       "status": "cancelled",
       "createdAt": "2025-01-10T12:00:00.000Z",
       "titleEn": "DBB Champions League",
-      "descriptionEn": "The community’s biggest competitive tournament, where the best beatboxers battle for the title of champion of champions.",
+      "descriptionEn": "The community’s biggest competitive tournament, where the best beatboxers battle for the title of champion of champions. Canceled for now but coming soon!",
       "categoryEn": "Tournament"
     }
   ],
@@ -132,5 +132,5 @@
       "descriptionEn": "The main event with a live broadcast, award ceremony and the crowning of the new DBB champions."
     }
   ],
-  "updatedAt": "2026-10-22T18:24:47.098Z"
+  "updatedAt": "2026-10-22T18:25:15.961Z"
 }
