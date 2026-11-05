@@ -115,10 +115,11 @@
       "dateOrPeriod": "Fase 2",
       "description": "Binnenkort meer info",
       "status": "upcoming",
-      "icon": "zap",
+      "icon": "users",
       "titleEn": "Soon to be announced",
-      "dateOrPeriodEn": "Phase 2",
-      "descriptionEn": "Soon to be announced"
+      "dateOrPeriodEn": "13-12-2026",
+      "descriptionEn": "Soon to be announced",
+      "link": "https://discord.gg/xDeVArRPkt"
     },
     {
       "id": "road-3",
@@ -133,5 +134,5 @@
       "descriptionEn": "More info soon."
     }
   ],
-  "updatedAt": "2026-11-05T14:53:50.959Z"
+  "updatedAt": "2026-11-05T14:56:32.145Z"
 }
